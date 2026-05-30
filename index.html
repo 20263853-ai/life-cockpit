@@ -336,13 +336,7 @@ function renderOverview(){
 }
 
 /* ===== 提醒中心 ===== */
-var reminders=[
-  {title:"每日采记",cron:"21:30",icon:"📋",cat:"日常"},
-  {title:"体检提醒",cron:"每月",icon:"🏥",cat:"健康",desc:"甲功三项+心电图"},
-  {title:"职称查询",cron:"待定",icon:"📝",cat:"工作",desc:"主治医师考试成绩"},
-  {title:"睡眠追踪",cron:"21:00",icon:"🌙",cat:"健康"},
-  {title:"沐沐追踪表",cron:"周日",icon:"👶",cat:"家庭"}
-];
+var reminders=[];
 function getNextOccurrence(r){
   if(r.cron==="每月")return"每月1号";
   if(r.cron==="待定")return"待确认";
