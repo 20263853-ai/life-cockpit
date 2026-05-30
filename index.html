@@ -200,12 +200,25 @@ function saveQScores(s){localStorage.setItem(Q_KEY,JSON.stringify(s))}
 function getReviews(){try{return JSON.parse(localStorage.getItem(REVIEW_KEY))||[]}catch(e){return[]}}
 function saveReviews(r){localStorage.setItem(REVIEW_KEY,JSON.stringify(r))}
 
+function getTotalQuestions(){var n=0;DIMS.forEach(function(d){n+=d.qs.length});return n}
+function getQuestion(step){
+  var n=0;
+  for(var i=0;i<DIMS.length;i++){
+    for(var j=0;j<DIMS[i].qs.length;j++){
+      if(n===step)return{dim:DIMS[i],qIndex:j,q:DIMS[i].qs[j]};
+      n++;
+    }
+  }
+  return null;
+}
 function renderQuestionnaire(){
   var box=document.getElementById('qContent');
-  if(qStep>=DIMS.length){renderQResult();return;}
-  var d=DIMS[qStep];
-  var qObj=d.qs[0];
-  box.innerHTML='<div style="text-align:center;margin-bottom:12px"><span style="background:#f0f0f0;padding:4px 12px;border-radius:20px;font-size:13px;color:#888">维度 '+(qStep+1)+' / '+DIMS.length+'</span></div>'
+  var total=getTotalQuestions();
+  if(qStep>=total){renderQResult();return;}
+  var info=getQuestion(qStep);
+  var d=info.dim;var qObj=info.q;
+  var dimIdx=DIMS.indexOf(d)+1;
+  box.innerHTML='<div style="text-align:center;margin-bottom:12px"><span style="background:#f0f0f0;padding:4px 12px;border-radius:20px;font-size:13px;color:#888">维度 '+dimIdx+'/'+DIMS.length+' · 第'+(info.qIndex+1)+'/'+d.qs.length+'题 · 总进度 '+(qStep+1)+'/'+total+'</span></div>'
     +'<h3 style="margin:0 0 8px;font-size:20px;color:#333">'+d.name+'</h3>'
     +'<p style="color:#666;margin:0 0 20px;font-size:14px">'+qObj.t+'</p>'
     +'<div id="q-options" style="display:flex;flex-direction:column;gap:10px"></div>';
@@ -423,7 +436,7 @@ function removeGoal(idx){
   }catch(e){}
 }
 function updateOverview(){
-  if(qStep<DIMS.length)return;
+  if(qStep<getTotalQuestions())return;
   var total=0,max=0;DIMS.forEach(function(d){total+=qScores[d.key]||0;max+=30});
   var pct=Math.round(total/max*100);
   var el=document.getElementById('scoreNum');
@@ -1023,7 +1036,7 @@ function renderDeviation(){
   qScores=getQScores();qStep=getQStep();qAnswers=getQAnswers();
   reminders=JSON.parse(localStorage.getItem(REM_KEY)||'null')||[{title:"体检提醒",cron:"每月1号",icon:"🏥",cat:"健康",desc:"安排一次全面体检"},{title:"每周复盘",cron:"周日",icon:"📝",cat:"个人成长",desc:"回顾本周目标完成情况"},{title:"运动打卡",cron:"每天",icon:"🏃",cat:"健康",desc:"至少运动30分钟"}];saveReminders();
   loadRecords();
-  if(qStep>=DIMS.length){renderQResult();renderOverview()}else{renderQuestionnaire()}
+  if(qStep>=getTotalQuestions()){renderQResult();renderOverview()}else{renderQuestionnaire()}
   renderOverview();
   renderReminders();
   renderTimeline();
