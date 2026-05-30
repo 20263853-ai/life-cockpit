@@ -145,7 +145,8 @@ function renderRoadmap(){
 }
 
 function switchTab(el,name){var tabName=(typeof el==="string")?el:name;document.querySelectorAll(".tab").forEach(function(t){t.classList.remove("active");if(t.getAttribute("onclick")&&t.getAttribute("onclick").indexOf(tabName)>=0)t.classList.add("active")});document.querySelectorAll(".panel").forEach(function(p){p.classList.remove("active")});document.getElementById("panel-"+tabName).classList.add("active");window.scrollTo({top:0,behavior:"smooth"});sessionStorage.setItem("cockpit_tab",name);if(tabName==="records"){var ci=document.getElementById("chatInput");if(ci)ci.focus()}
-  if(tabName==="roadmap"&&!document.getElementById("roadLocked")){loadGoals()}}
+  if(tabName==="roadmap"&&!document.getElementById("roadLocked")){loadGoals()}
+  if(tabName==="deviation"){renderDeviation()}}
 var DIMS=[
 {key:"income",name:"💰 职业收入",color:"var(--orange)",
   qs:[
