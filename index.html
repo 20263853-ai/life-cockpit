@@ -100,7 +100,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
     </div>
   </div>
 </div>
-<div class="panel" id="panel-deviation"><h2 class="section-title">偏航检测</h2><div class="dev-section" id="devContent"></div></div>
+<div class="panel" id="panel-deviation"><h2 class="section-title">🧭 偏航检测</h2><div class="dev-section" id="devContent"></div></div>
 <div class="panel" id="panel-review"><h2 class="section-title">月度复盘</h2><div id="reviewContent"></div><div id="review-history" style="margin-top:20px"></div></div>
 <div class="panel" id="panel-timeline">
   <h2 class="section-title">每日时间轴</h2>
@@ -159,7 +159,7 @@ var DIMS=[
     {t:"你最近一次做体检是什么时候？",o:[{l:"超过2年没体检",s:1,e:"⚠️"},{l:"1-2年前",s:3,e:"🤔"},{l:"不到1年前",s:6,e:"📋"},{l:"半年内体检过",s:8,e:"✅"},{l:"定期体检+日常监测",s:10,e:"🏥"}]},
     {t:"你每周有多少天会运动30分钟以上？",o:[{l:"完全不运动",s:1,e:"🛋️"},{l:"偶尔1天",s:3,e:"🚶"},{l:"2-3天",s:6,e:"🏃"},{l:"4-5天",s:8,e:"💪"},{l:"每天运动",s:10,e:"🏆"}]}
 ]},
-{key:"mumu",name:"👨‍👦 家庭教育",color:"var(--green)",
+{key:"mumu",name:"👨‍👦 亲子关系",color:"var(--green)",
   qs:[
     {t:"你每周有多少天陪孩子学习或阅读超过20分钟？",o:[{l:"几乎不陪",s:1,e:"😞"},{l:"1-2天",s:3,e:"😐"},{l:"3-4天",s:6,e:"👍"},{l:"5-6天",s:8,e:"📖"},{l:"每天坚持",s:10,e:"❤️"}]},
     {t:"你清楚孩子目前语数英三科的具体薄弱点吗？",o:[{l:"完全不清楚",s:1,e:"❓"},{l:"大概知道但不具体",s:3,e:"🤔"},{l:"知道薄弱点没方案",s:6,e:"📋"},{l:"有方案在执行",s:8,e:"📝"},{l:"持续跟踪调整",s:10,e:"📊"}]},
@@ -334,10 +334,10 @@ function getAdviceHTML(key,pct){
       {t:'📱 减少屏幕时间',d:'睡前1小时放下手机，改用阅读或冥想替代。'}
     ],
     mumu:[
-      {t:'📖 建立亲子阅读时间',d:'每周固定3-4天，每次20分钟陪孩子阅读，记录进度。'},
-      {t:'📊 诊断薄弱科目',d:'拿最近一次考试或作业，逐科分析错题类型，列出具体薄弱点。'},
-      {t:'🎯 设定阶段性目标',d:'根据薄弱点，设定1个月后可量化的目标（如：数学计算正确率从60%到80%）。'},
-      {t:'📝 建立成长记录',d:'用表格或日记记录每天的学习内容、进步和问题，每周复盘。'}
+      {t:'📖 建立亲子阅读时间',d:'每周固定3-4天，每次20分钟和孩子一起阅读，记录进度。'},
+      {t:'📊 了解孩子学习状态',d:'和孩子聊聊最近的学习感受，了解哪科有困难，记录薄弱点。'},
+      {t:'🎯 设定成长小目标',d:'根据孩子的薄弱点，设定1个月后可量化的目标，让孩子参与制定。'},
+      {t:'📝 建立亲子成长记录',d:'每周记录一次孩子的进步和需要关注的地方，和孩子一起回顾。'}
     ],
     work:[
       {t:'📋 列出本周所有任务',d:'按优先级排序，区分"必须完成"和"可以延后"，减少加班。'},
@@ -796,42 +796,191 @@ function saveReview(){
 /* ===== 偏航检测 ===== */
 function renderDeviation(){
   var box=document.getElementById('devContent');if(!box)return;
-  var total=0,max=0;DIMS.forEach(function(d){total+=qScores[d.key]||0;max+=30});
-  var pct=Math.round(total/max*100);
+  if(qStep<DIMS.length){
+    box.innerHTML='<div style="text-align:center;padding:60px 20px;color:#999"><div style="font-size:48px;margin-bottom:16px">🧭</div><div style="font-size:16px;margin-bottom:8px">完成七维测评后启用</div><div style="font-size:13px">偏航检测需要测评数据作为航向基准</div></div>';
+    return;
+  }
 
-  var checks=[];
-  if(pct<50)checks.push({level:'warn',text:'综合评分低于50%，建议重新评估各维度优先级'});
-  if((qScores['health']||0)<5)checks.push({level:'warn',text:'身体维度得分偏低，请注意健康管理和睡眠质量'});
-  if((qScores['mumu']||0)<5)checks.push({level:'warn',text:'沐沐维度得分偏低，建议增加陪伴和关注时间'});
-  if((qScores['finance']||0)<5)checks.push({level:'warn',text:'财务维度得分偏低，建议审视投资组合和理财计划'});
-  if((qScores['work']||0)<5)checks.push({level:'warn',text:'工作维度得分偏低，注意职业发展是否需要调整方向'});
+  // 1. 获取用户设定的目标
+  var goals=[];
+  try{goals=JSON.parse(localStorage.getItem('cockpit_road_goals')||'[]')}catch(e){}
 
+  // 2. 获取近7天时间轴数据
   var data=getTimelineData();
-  var today=new Date().toISOString().slice(0,10);
-  var todayEntries=data.filter(function(e){return e.date===today});
-  var workMin=0,learnMin=0;
-  todayEntries.forEach(function(e){
+  var now=new Date();
+  var weekAgo=new Date(now.getTime()-7*86400000).toISOString().slice(0,10);
+  var weekEntries=data.filter(function(e){return e.date>=weekAgo});
+
+  // 3. 计算各分类本周总时长
+  var catTime={};
+  weekEntries.forEach(function(e){
     var dur=calcDuration(e.start,e.end);
-    if(e.cat==='work')workMin+=dur;
-    if(e.cat==='study'||e.cat==='mumu')learnMin+=dur;
+    catTime[e.cat]=(catTime[e.cat]||0)+dur;
   });
-  if(todayEntries.length>0&&workMin<60)checks.push({level:'info',text:'今日工作时间不足1小时，注意工作效率分配'});
-  if(todayEntries.length>0&&learnMin<30)checks.push({level:'info',text:'今日学习/成长时间不足30分钟'});
 
-  if(checks.length===0)checks.push({level:'ok',text:'各维度状态正常，继续保持当前节奏'});
+  // 4. 维度→分类映射
+  var dimCatMap={
+    income:'work',health:'exercise',mumu:'family',
+    work:'work',finance:'study',mind:'study',time:'other'
+  };
 
-  var icons={warn:'⚠️',info:'💡',ok:'✅'};
-  var colors={warn:'#FF9800',info:'#2196F3',ok:'#4CAF50'};
-  var bgs={warn:'#fff8e1',info:'#e3f2fd',ok:'#e8f5e9'};
+  // 5. 航向指标系统
+  var compass=[
+    {
+      name:'🎯 健康航向',dim:'health',icon:'🏥',
+      check:function(){
+        var s=qScores.health||0;p=Math.round(s/30*100);
+        var exMin=catTime.exercise||0;var status='green';
+        var msgs=[];
+        if(s<=10){status='red';msgs.push('测评健康得分极低（'+s+'/30），身体可能已在亮红灯');}
+        else if(s<=15){status='yellow';msgs.push('健康得分偏低（'+s+'/30），需要重视');}
+        else{msgs.push('健康得分尚可（'+s+'/30）');}
+        if(exMin===0&&weekEntries.length>0){status=status==='green'?'yellow':status;msgs.push('本周无运动记录，健康目标缺乏行动支撑');}
+        else if(exMin>0){msgs.push('本周运动'+Math.round(exMin/60*10)/10+'小时');}
+        return{status:status,msgs:msgs};
+      }
+    },
+    {
+      name:'👨‍👦 亲子航向',dim:'mumu',icon:'❤️',
+      check:function(){
+        var s=qScores.mumu||0;p=Math.round(s/30*100);
+        var famMin=catTime.family||0;var status='green';
+        var msgs=[];
+        if(s<=10){status='red';msgs.push('亲子关系得分极低（'+s+'/30），孩子可能缺乏足够关注');}
+        else if(s<=15){status='yellow';msgs.push('亲子得分偏低（'+s+'/30），高质量陪伴需要增加');}
+        else{msgs.push('亲子关系得分尚可（'+s+'/30）');}
+        if(famMin<120){status=status==='green'?'yellow':status;msgs.push('本周亲子时间不足2小时（实际'+Math.round(famMin/60*10)/10+'小时）');}
+        else{msgs.push('本周亲子时间'+Math.round(famMin/60*10)/10+'小时');}
+        return{status:status,msgs:msgs};
+      }
+    },
+    {
+      name:'💼 事业航向',dim:'work',icon:'🚀',
+      check:function(){
+        var s=qScores.work||0;p=Math.round(s/30*100);
+        var wkMin=catTime.work||0;var status='green';
+        var msgs=[];
+        if(s<=10){status='red';msgs.push('事业得分极低（'+s+'/30），可能需要重新评估职业方向');}
+        else if(s<=15){status='yellow';msgs.push('事业得分偏低（'+s+'/30），工作状态需要调整');}
+        else{msgs.push('事业得分尚可（'+s+'/30）');}
+        if(goals.some(function(g){return g.dim==='work'})){
+          msgs.push('你设定了事业相关目标，建议每周回顾进展');
+        }
+        return{status:status,msgs:msgs};
+      }
+    },
+    {
+      name:'💰 财务航向',dim:'finance',icon:'📈',
+      check:function(){
+        var s=qScores.finance||0;p=Math.round(s/30*100);
+        var status='green';
+        var msgs=[];
+        if(s<=10){status='red';msgs.push('财务得分极低（'+s+'/30），家庭经济可能面临风险');}
+        else if(s<=15){status='yellow';msgs.push('财务得分偏低（'+s+'/30），需要建立理财习惯');}
+        else{msgs.push('财务得分尚可（'+s+'/30）');}
+        var hasFinGoal=goals.some(function(g){return g.dim==='finance'});
+        if(!hasFinGoal&&s<=20){msgs.push('建议设定一个具体的财务目标（如月存XX元）');}
+        return{status:status,msgs:msgs};
+      }
+    },
+    {
+      name:'🧠 心理航向',dim:'mind',icon:'🧘',
+      check:function(){
+        var s=qScores.mind||0;p=Math.round(s/30*100);
+        var status='green';
+        var msgs=[];
+        if(s<=10){status='red';msgs.push('心理状态得分极低（'+s+'/30），情绪可能长期低落，建议寻求支持');}
+        else if(s<=15){status='yellow';msgs.push('心理得分偏低（'+s+'/30），需要有意识地进行情绪管理');}
+        else{msgs.push('心理状态得分尚可（'+s+'/30）');}
+        return{status:status,msgs:msgs};
+      }
+    },
+    {
+      name:'⏰ 时间航向',dim:'time',icon:'⏱️',
+      check:function(){
+        var s=qScores.time||0;p=Math.round(s/30*100);
+        var entMin=catTime.entertainment||0;
+        var totalMin=0;weekEntries.forEach(function(e){totalMin+=calcDuration(e.start,e.end)});
+        var status='green';
+        var msgs=[];
+        if(s<=10){status='red';msgs.push('时间管理得分极低（'+s+'/30），时间可能完全失控');}
+        else if(s<=15){status='yellow';msgs.push('时间管理得分偏低（'+s+'/30），需要建立时间意识');}
+        else{msgs.push('时间管理得分尚可（'+s+'/30）');}
+        if(entMin>0&&totalMin>0){
+          var entPct=Math.round(entMin/totalMin*100);
+          if(entPct>40){status=status==='green'?'yellow':status;msgs.push('本周娱乐时间占'+entPct+'%（'+Math.round(entMin/60*10)/10+'小时），比重偏高');}
+          else{msgs.push('本周娱乐占比'+entPct+'%，控制合理');}
+        }
+        if(totalMin===0){msgs.push('本周暂无时间记录，无法分析时间分配');}
+        else{msgs.push('本周共记录'+Math.round(totalMin/60*10)/10+'小时');}
+        return{status:status,msgs:msgs};
+      }
+    }
+  ];
 
-  var html='<div style="display:flex;flex-direction:column;gap:10px">';
-  checks.forEach(function(c){
-    html+='<div style="background:'+bgs[c.level]+';border-radius:10px;padding:14px 16px;display:flex;align-items:flex-start;gap:10px">'
-      +'<span style="font-size:20px">'+icons[c.level]+'</span>'
-      +'<div style="font-size:14px;color:'+colors[c.level]+';line-height:1.5;font-weight:500">'+c.text+'</div></div>';
+  // 6. 用户自定义目标检查
+  var goalChecks=[];
+  goals.forEach(function(g){
+    var dimObj=DIMS.find(function(d){return d.key===g.dim});
+    var dimLabel=dimObj?dimObj.name:'未分类';
+    var dimKey=g.dim||'other';
+    var relatedCat=dimCatMap[dimKey]||'other';
+    var relatedMin=catTime[relatedCat]||0;
+    var status='yellow';
+    var msg='目标「'+g.text+'」本周投入时间较少（'+Math.round(relatedMin/60*10)/10+'小时）';
+    if(relatedMin>=120)status='green';
+    else if(relatedMin>=60){status='yellow';msg='目标「'+g.text+'」有部分投入（'+Math.round(relatedMin/60*10)/10+'小时），继续保持';}
+    goalChecks.push({name:'📌 '+g.text,status:status,msgs:[msg],sub:'关联维度：'+dimLabel});
   });
-  html+='</div>';
-  box.innerHTML=html;
+
+  // 7. 渲染
+  var styles={red:{bg:'#fce4ec',border:'#e53935',icon:'🔴',label:'严重偏航'},yellow:{bg:'#fff8e1',border:'#f9a825',icon:'🟡',label:'轻度偏航'},green:{bg:'#e8f5e9',border:'#43a047',icon:'🟢',label:'航向正确'}};
+
+  var totalScore=Math.round((qScores.income||0+(qScores.health||0)+(qScores.mumu||0)+(qScores.work||0)+(qScores.finance||0)+(qScores.mind||0)+(qScores.time||0))/210*100);
+  var overallStatus=totalScore>=70?'green':totalScore>=45?'yellow':'red';
+
+  var h='<div style="margin-bottom:20px;padding:16px;border-radius:12px;background:'+styles[overallStatus].bg+';border-left:4px solid '+styles[overallStatus].border+'">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'
+    +'<span style="font-size:16px;font-weight:700;color:#333">整体航向</span>'
+    +'<span style="font-size:13px;padding:3px 10px;border-radius:12px;background:'+styles[overallStatus].border+'20;color:'+styles[overallStatus].border+';font-weight:600">'+styles[overallStatus].icon+' '+styles[overallStatus].label+'</span></div>'
+    +'<div style="font-size:28px;font-weight:800;color:'+styles[overallStatus].border+'">'+totalScore+'%</div>'
+    +'<div style="font-size:12px;color:#888;margin-top:4px">基于测评分数 + 近7天行为数据综合判断</div></div>';
+
+  // 航向卡片
+  compass.forEach(function(c){
+    var result=c.check();
+    var st=styles[result.status];
+    h+='<div style="margin-bottom:10px;padding:14px 16px;border-radius:10px;background:'+st.bg+';border-left:3px solid '+st.border+'">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'
+      +'<span style="font-weight:600;font-size:14px;color:#333">'+c.name+'</span>'
+      +'<span style="font-size:11px;padding:2px 8px;border-radius:10px;background:'+st.border+'20;color:'+st.border+'">'+st.icon+' '+st.label+'</span></div>'
+      +'<div style="font-size:13px;color:#555;line-height:1.8">'
+      +result.msgs.map(function(m){return'<div>• '+m+'</div>'}).join('')
+      +'</div></div>';
+  });
+
+  // 自定义目标检查
+  if(goalChecks.length>0){
+    h+='<div style="margin-top:16px;padding-top:16px;border-top:1px dashed #ddd">'
+      +'<h4 style="margin:0 0 12px;font-size:14px;color:#333">📌 你的目标追踪</h4>';
+    goalChecks.forEach(function(g){
+      var st=styles[g.status];
+      h+='<div style="margin-bottom:8px;padding:10px 14px;border-radius:8px;background:'+st.bg+';border-left:3px solid '+st.border+'">'
+        +'<div style="font-weight:600;font-size:13px;color:#333;margin-bottom:4px">'+g.name+' <span style="font-size:11px;color:#888;font-weight:400">'+g.sub+'</span></div>'
+        +'<div style="font-size:12px;color:#555">• '+g.msgs[0]+'</div></div>';
+    });
+    h+='</div>';
+  }
+
+  // 底部提示
+  h+='<div style="margin-top:16px;padding:12px;background:#f5f5f5;border-radius:8px;font-size:12px;color:#888;line-height:1.6">'
+    +'<strong>💡 如何使用偏航检测：</strong><br>'
+    +'1. 完成七维测评建立航向基准<br>'
+    +'2. 在发展路线中设定具体目标<br>'
+    +'3. 每日记录时间轴（时间轴中的数据会用于偏航判断）<br>'
+    +'4. 定期查看此面板，及时调整方向</div>';
+
+  box.innerHTML=h;
 }
 
 /* ===== 初始化 ===== */
