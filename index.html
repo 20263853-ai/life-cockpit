@@ -493,13 +493,8 @@ function renderOverview(){
 }
 
 /* ===== 提醒中心 ===== */
-var reminders=[
-  {title:"每日采记",cron:"21:30",icon:"📋",cat:"日常"},
-  {title:"体检提醒",cron:"每月",icon:"🏥",cat:"健康",desc:"甲功三项+心电图"},
-  {title:"职称查询",cron:"待定",icon:"📝",cat:"工作",desc:"主治医师考试成绩"},
-  {title:"睡眠追踪",cron:"21:00",icon:"🌙",cat:"健康"},
-  {title:"沐沐追踪表",cron:"周日",icon:"👶",cat:"家庭"}
-];
+var REM_KEY="cockpit_reminders";;
+function saveReminders(){try{localStorage.setItem(REM_KEY,JSON.stringify(reminders))}catch(e){}}
 function getNextOccurrence(r){
   if(r.cron==="每月")return"每月1号";
   if(r.cron==="待定")return"待确认";
@@ -517,17 +512,55 @@ function getNextOccurrence(r){
 function renderReminders(){
   var box=document.getElementById('reminderList');
   if(!box)return;
-  var html='<div style="display:flex;flex-direction:column;gap:10px">';
-  reminders.forEach(function(r){
+  var icons=['📋','🏥','📝','🏃','🌙','💰','❤️','📚','🎯','🧘','📱','👶'];
+  var cats=['日常','健康','工作','学习','个人成长','财务','家庭'];
+  var h='<div style="display:flex;flex-direction:column;gap:10px">';
+  reminders.forEach(function(r,i){
     var next=getNextOccurrence(r);
-    html+='<div style="background:#f8f9fa;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px">'
+    h+='<div style="background:#f8f9fa;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px">'
       +'<span style="font-size:28px">'+r.icon+'</span>'
       +'<div style="flex:1"><div style="font-weight:600;font-size:14px;color:#333">'+r.title+'</div>'
       +(r.desc?'<div style="font-size:12px;color:#888;margin-top:2px">'+r.desc+'</div>':'')
-      +'</div><span style="font-size:12px;color:#4CAF50;font-weight:600;background:#e8f5e9;padding:4px 10px;border-radius:20px">'+next+'</span></div>';
+      +'</div>'
+      +'<span style="font-size:12px;color:#4CAF50;font-weight:600;background:#e8f5e9;padding:4px 10px;border-radius:20px">'+next+'</span>'
+      +'<button onclick="removeReminder('+i+')" style="background:none;border:none;color:#ccc;font-size:18px;cursor:pointer;padding:2px 6px">×</button>'
+      +'</div>';
   });
-  html+='</div>';
-  box.innerHTML=html;
+  h+='</div>'
+    +'<div style="margin-top:20px;padding:16px;background:#f8f9fa;border-radius:12px">'
+    +'<h4 style="margin:0 0 12px;font-size:14px;color:#333">➕ 添加提醒</h4>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">'
+    +'<input id="remTitle" placeholder="提醒名称" style="flex:1;min-width:140px;padding:8px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px;box-sizing:border-box">'
+    +'<input id="remDesc" placeholder="详细说明（可选）" style="flex:2;min-width:140px;padding:8px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px;box-sizing:border-box">'
+    +'</div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">'
+    +'<input id="remCron" placeholder="频率（如：每天/每周一/每月/21:30）" style="flex:1;min-width:200px;padding:8px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px;box-sizing:border-box">'
+    +'<select id="remIcon" style="padding:8px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px">'
+    +icons.map(function(ic){return'<option value="'+ic+'">'+ic+'</option>'}).join('')
+    +'</select>'
+    +'<select id="remCat" style="padding:8px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px">'
+    +cats.map(function(c){return'<option value="'+c+'">'+c+'</option>'}).join('')
+    +'</select>'
+    +'</div>'
+    +'<button onclick="addReminder()" style="padding:8px 20px;border:none;border-radius:8px;background:#4CAF50;color:#fff;font-size:13px;cursor:pointer">添加</button>'
+    +'</div>';
+  box.innerHTML=h;
+}
+function addReminder(){
+  var title=document.getElementById('remTitle').value.trim();
+  if(!title){document.getElementById('remTitle').focus();return;}
+  var desc=document.getElementById('remDesc').value.trim();
+  var cron=document.getElementById('remCron').value.trim()||'每天';
+  var icon=document.getElementById('remIcon').value;
+  var cat=document.getElementById('remCat').value;
+  reminders.push({title:title,cron:cron,icon:icon,cat:cat,desc:desc});
+  saveReminders();
+  renderReminders();
+}
+function removeReminder(idx){
+  reminders.splice(idx,1);
+  saveReminders();
+  renderReminders();
 }
 
 /* ===== 对话记录 ===== */
@@ -988,6 +1021,7 @@ function renderDeviation(){
 /* ===== 初始化 ===== */
 (function(){
   qScores=getQScores();qStep=getQStep();qAnswers=getQAnswers();
+  reminders=JSON.parse(localStorage.getItem(REM_KEY)||'null')||[{title:"体检提醒",cron:"每月1号",icon:"🏥",cat:"健康",desc:"安排一次全面体检"},{title:"每周复盘",cron:"周日",icon:"📝",cat:"个人成长",desc:"回顾本周目标完成情况"},{title:"运动打卡",cron:"每天",icon:"🏃",cat:"健康",desc:"至少运动30分钟"}];saveReminders();
   loadRecords();
   if(qStep>=DIMS.length){renderQResult();renderOverview()}else{renderQuestionnaire()}
   renderOverview();
