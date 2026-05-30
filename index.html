@@ -160,9 +160,9 @@ function renderRoadmap(){
 }
 
 function switchTab(el,name){var tabName=(typeof el==="string")?el:name;document.querySelectorAll(".tab").forEach(function(t){t.classList.remove("active");if(t.getAttribute("onclick")&&t.getAttribute("onclick").indexOf(tabName)>=0)t.classList.add("active")});document.querySelectorAll(".panel").forEach(function(p){p.classList.remove("active")});document.getElementById("panel-"+tabName).classList.add("active");window.scrollTo({top:0,behavior:"smooth"});sessionStorage.setItem("cockpit_tab",name);if(tabName==="records"){var ci=document.getElementById("chatInput");if(ci)ci.focus()}
-  if(tabName==="roadmap"&&!document.getElementById('roadLocked')&&qStep>=DIMS.length){renderRoadmap()}}
+  if(tabName==="roadmap"&&!document.getElementById("roadLocked")){loadGoals()}}
 var DIMS=[{key:"income",name:"💰 职业收入",color:"var(--orange)",qs:[{t:"个人收入与能力匹配吗？",o:[{l:"严重不匹配",s:2,e:"😞"},{l:"偏低但有增长路径",s:5,e:"😐"},{l:"基本匹配",s:8,e:"🙂"},{l:"超出预期",s:10,e:"😄"}]},{t:"有明确涨薪路径吗？",o:[{l:"看不到",s:1,e:"😞"},{l:"有方向不确定",s:5,e:"🤔"},{l:"清晰在推进",s:8,e:"👍"},{l:"已在路上",s:10,e:"🚀"}]}]},{key:"health",name:"🏥 身体健康",color:"var(--red)",qs:[{t:"睡眠质量如何？",o:[{l:"严重不足<6h",s:1,e:"😵"},{l:"勉强6-7h",s:4,e:"😴"},{l:"还行7-8h",s:7,e:"🙂"},{l:"很好8h+",s:10,e:"💪"}]},{t:"有需要排查的症状吗？",o:[{l:"有症状没查",s:1,e:"⚠️"},{l:"有点担心",s:4,e:"🤔"},{l:"查了在治",s:6,e:"💊"},{l:"没问题",s:10,e:"✅"}]}]},{key:"mumu",name:"👨‍👦 家庭教育",color:"var(--green)",qs:[{t:"沐沐方案执行怎样？",o:[{l:"还没开始",s:1,e:"📋"},{l:"刚开始",s:4,e:"🌱"},{l:"部分偏移",s:6,e:"🌿"},{l:"稳定进步",s:10,e:"🌳"}]},{t:"教育投入时间够吗？",o:[{l:"几乎没",s:1,e:"😞"},{l:"偶尔陪",s:4,e:"😐"},{l:"每周固定",s:7,e:"👍"},{l:"每天关注",s:10,e:"❤️"}]}]},{key:"work",name:"💼 工作状态",color:"var(--blue)",qs:[{t:"工作边界感如何？",o:[{l:"没有随时办公",s:1,e:"📱"},{l:"偶尔加班",s:5,e:"⚖️"},{l:"能分清",s:8,e:"✂️"},{l:"边界清晰",s:10,e:"🎯"}]},{t:"成果被认可吗？",o:[{l:"没人看见",s:2,e:"😢"},{l:"部分认可",s:5,e:"😐"},{l:"有发展机会",s:8,e:"📈"},{l:"上升中",s:10,e:"🏆"}]}]},{key:"finance",name:"📊 家庭财务",color:"var(--cyan)",qs:[{t:"家庭财务怎样？",o:[{l:"紧张有负债",s:1,e:"😰"},{l:"收支平衡",s:5,e:"持平"},{l:"有存款保险",s:8,e:"👍"},{l:"财务自由在望",s:10,e:"💰"}]},{t:"投资理财有计划吗？",o:[{l:"没规划",s:1,e:"❌"},{l:"有想法没做",s:4,e:"💭"},{l:"定投已建",s:7,e:"📈"},{l:"体系化",s:10,e:"📊"}]}]},{key:"mind",name:"🧠 心理状态",color:"var(--purple)",qs:[{t:"最近心理怎样？",o:[{l:"低落频繁",s:1,e:"😞"},{l:"每月几天低谷",s:4,e:"😐"},{l:"大部分不错",s:7,e:"🙂"},{l:"稳定有调节力",s:10,e:"😌"}]},{t:"有有效的调节方式吗？",o:[{l:"靠硬扛",s:1,e:"🚫"},{l:"偶尔调节",s:4,e:"🤔"},{l:"养小鸡看书等",s:7,e:"🌱"},{l:"多种方式",s:10,e:"🧘"}]}]},{key:"time",name:"⏰ 时间管理",color:"var(--pink)",qs:[{t:"时间分配合理吗？",o:[{l:"被填满",s:1,e:"😵"},{l:"很少自己时间",s:3,e:"😰"},{l:"有恢复时间",s:6,e:"😐"},{l:"工作休息平衡",s:10,e:"⚖️"}]},{t:"每天多少自己时间？",o:[{l:"几乎没有",s:1,e:"0h"},{l:"不到30分钟",s:3,e:"<30m"},{l:"1-2小时",s:6,e:"1-2h"},{l:"3小时以上",s:10,e:"3h+"}]}]}];
-var qStep=7,qScores={"income":5,"health":4,"mumu":5,"work":6,"finance":5,"mind":5,"time":8};
+var qStep=0,qScores={},qAnswers={};
 var Q_KEY="cockpit_q_scores",REVIEW_KEY="cockpit_reviews";
 function getQScores(){try{return JSON.parse(localStorage.getItem(Q_KEY))||{}}catch(e){return{}}}
 function saveQScores(s){localStorage.setItem(Q_KEY,JSON.stringify(s))}
@@ -191,12 +191,15 @@ function renderQuestionnaire(){
   });
 }
 function answerQ(key,score){
-  qScores[key]=score;saveQScores(qScores);
+  if(!qAnswers[key])qAnswers[key]=[];
+  qAnswers[key].push(score);
+  qScores[key]=(qAnswers[key].reduce(function(a,b){return a+b},0));
+  saveQScores(qScores);
   qStep++;renderQuestionnaire();
 }
 function renderQResult(){
   var box=document.getElementById('qContent');
-  var total=0,max=0;DIMS.forEach(function(d){total+=qScores[d.key]||0;max+=d.max||10});
+  var total=0,max=0;DIMS.forEach(function(d){total+=qScores[d.key]||0;max+=d.max||30});
   var pct=Math.round(total/max*100);
   var level=pct>=80?'优秀':pct>=60?'良好':pct>=40?'一般':'待提升';
   var lc=pct>=80?'#4CAF50':pct>=60?'#2196F3':pct>=40?'#FF9800':'#f44336';
@@ -205,42 +208,192 @@ function renderQResult(){
     +'<div style="font-size:16px;color:#666;margin-top:4px">综合评分 · '+level+'</div></div>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">';
   DIMS.forEach(function(d){
-    var s=qScores[d.key]||0;var m=10;var p=Math.round(s/m*100);
+    var s=qScores[d.key]||0;var m=30;var p=Math.round(s/m*100);
+    var lvl=p>=70?'优秀':p>=50?'良好':p>=30?'一般':'待提升';
     html+='<div style="background:#f8f9fa;border-radius:10px;padding:14px">'
       +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'
       +'<span style="font-weight:600;font-size:14px;color:#333">'+d.name+'</span>'
-      +'<span style="font-size:13px;color:'+d.color+';font-weight:700">'+s+'/'+m+'</span></div>'
+      +'<span style="font-size:13px;color:'+d.color+';font-weight:700">'+s+'/'+m+' '+lvl+'</span></div>'
       +'<div style="background:#e0e0e0;border-radius:4px;height:8px;overflow:hidden">'
       +'<div style="height:100%;width:'+p+'%;background:'+d.color+';border-radius:4px;transition:width .5s"></div></div></div>';
   });
   html+='</div><div style="text-align:center;margin-top:20px">'
-    +'<button onclick="qStep=0;renderQuestionnaire()" style="padding:10px 24px;border:none;border-radius:8px;background:#4CAF50;color:#fff;font-size:14px;cursor:pointer">重新测评</button></div>';
+    +'<button onclick="qStep=0;qScores={};qAnswers={};renderQuestionnaire()" style="padding:10px 24px;border:none;border-radius:8px;background:#4CAF50;color:#fff;font-size:14px;cursor:pointer">重新测评</button></div>';
   box.innerHTML=html;
   updateOverview();
-  // 解锁发展路线
+  unlockRoadmap();
+}
+
+function unlockRoadmap(){
   var roadLocked=document.getElementById('roadLocked');
-  if(roadLocked){
-    roadLocked.style.display='none';
-    var rc=document.getElementById('roadContent');
-    rc.innerHTML='<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px">'
-      +'<h3 style="margin:0 0 12px;font-size:15px;color:#333">🎯 根据测评结果，建议关注以下方向</h3>'
-      +'<div id="roadList"></div>'
-      +'<div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">'
-      +'<input id="newGoalInput" placeholder="输入你的目标..." style="flex:1;min-width:200px;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;box-sizing:border-box">'
-      +'<button onclick="addGoal()" style="padding:8px 16px;border:none;border-radius:8px;background:#4CAF50;color:#fff;font-size:13px;cursor:pointer">添加目标</button>'
-      +'</div></div>';
-    var lowDims=DIMS.filter(function(d){return(qScores[d.key]||0)<5});
-    if(lowDims.length>0){
-      var hints=lowDims.map(function(d){return'<div class="road-item"><div><div class="rt">'+d.icon+' '+d.name+'</div><div class="rd">当前评分：'+(qScores[d.key]||0)+'/10，建议重点关注提升</div></div></div>'}).join('');
-      document.getElementById('roadList').innerHTML=hints;
-    }else{
-      document.getElementById('roadList').innerHTML='<div style="color:#999;padding:16px;text-align:center">各维度表现均衡，继续保持！</div>';
+  if(!roadLocked)return;
+  roadLocked.style.display='none';
+  var rc=document.getElementById('roadContent');
+  // 生成个性化发展路线建议
+  var advices=[];
+  DIMS.forEach(function(d){
+    var s=qScores[d.key]||0;
+    var p=Math.round(s/30*100);
+    if(p<40){
+      advices.push({key:d.key,name:d.name,color:d.color,level:'紧急',icon:'🔴',pct:p});
+    }else if(p<60){
+      advices.push({key:d.key,name:d.name,color:d.color,level:'关注',icon:'🟡',pct:p});
     }
+  });
+  // 按紧急度排序
+  advices.sort(function(a,b){return a.pct-b.pct});
+
+  var h='<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px">'
+    +'<h3 style="margin:0 0 8px;font-size:15px;color:#333">📊 基于测评的发展路线建议</h3>'
+    +'<p style="margin:0 0 16px;font-size:13px;color:#888">以下建议由你的测评数据自动生成，点击可展开具体行动方案</p>';
+
+  if(advices.length===0){
+    h+='<div style="color:#999;padding:16px;text-align:center">🎉 各维度表现均衡！继续保持，思考下一步突破方向</div>';
+  }else{
+    h+='<div id="roadList">';
+    advices.forEach(function(a){
+      h+='<div class="road-advice" style="border-left:3px solid '+a.color+';padding:12px 16px;margin-bottom:8px;background:#f8f9fa;border-radius:0 8px 8px 0;cursor:pointer" onclick="toggleAdvice(this)">'
+        +'<div style="display:flex;justify-content:space-between;align-items:center">'
+        +'<span style="font-weight:600;font-size:14px;color:#333">'+a.icon+' '+a.name+' <span style="font-size:12px;color:'+a.color+';font-weight:400">('+a.pct+'%)</span></span>'
+        +'<span style="font-size:11px;padding:2px 8px;border-radius:10px;background:'+a.color+'20;color:'+a.color+'">'+a.level+'</span></div>'
+        +'<div class="advice-detail" style="display:none;margin-top:10px;padding-top:10px;border-top:1px dashed #ddd;font-size:13px;color:#555;line-height:1.8">'
+        +getAdviceHTML(a.key,a.pct)
+        +'</div></div>';
+    });
+    // 高分维度也简要提示
+    var goodDims=DIMS.filter(function(d){return Math.round((qScores[d.key]||0)/30*100)>=70});
+    if(goodDims.length>0){
+      h+='<div style="margin-top:16px;padding:12px;background:#f0f9f0;border-radius:8px;font-size:13px;color:#2e7d32">'
+        +'<strong>✅ 表现优秀：</strong>'+goodDims.map(function(d){return d.name+'('+Math.round((qScores[d.key]||0)/30*100)+'%)'}).join('、')
+        +'<br>这是你的优势领域，思考如何进一步放大</div>';
+    }
+    h+='</div>';
   }
+
+  // 自定义目标
+  h+='<div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">'
+    +'<h4 style="margin:0 0 12px;font-size:14px;color:#333">🎯 制定你的发展目标</h4>'
+    +'<div style="margin-bottom:8px;font-size:12px;color:#888">根据上方建议，写下你最想改变的1-3个目标</div>'
+    +'<div id="goalForm">'
+    +'<div style="display:flex;gap:8px;margin-bottom:12px">'
+    +'<input id="goalInput" placeholder="例如：每月存2000元备用金" style="flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:13px;box-sizing:border-box">'
+    +'<select id="goalDim" style="padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:13px">'
+    +'<option value="">选择维度</option>'
+    +DIMS.map(function(d){return'<option value="'+d.key+'">'+d.name+'</option>'}).join('')
+    +'</select>'
+    +'<button onclick="addGoal()" style="padding:10px 20px;border:none;border-radius:8px;background:#4CAF50;color:#fff;font-size:13px;cursor:pointer;white-space:nowrap">添加</button>'
+    +'</div></div>'
+    +'<div id="goalList"></div></div></div>';
+
+  rc.innerHTML=h;
+
+  // 恢复已保存的目标
+  loadGoals();
+}
+
+function getAdviceHTML(key,pct){
+  var advices={
+    income:[
+      {t:'📊 盘点你的真实收入',d:'列出所有收入来源（工资、奖金、副业、投资收益），计算月均实际到手金额。'},
+      {t:'🎯 设定收入目标',d:'根据你的行业和职级，调研同岗位薪资范围，设定6个月后的目标收入。'},
+      {t:'🛤️ 规划涨薪路径',d:'找出涨薪的关键条件（考证、晋升、跳槽、副业），按优先级排列并设定时间表。'},
+      {t:'📋 开启第一笔副业',d:'选择一项与你技能匹配且时间允许的副业，本月开始行动。'}
+    ],
+    health:[
+      {t:'😴 固定入睡时间',d:'从今晚开始，设定一个固定的就寝时间（建议23:00前），用闹钟提醒。'},
+      {t:'🏥 预约体检',d:'如果超过1年没体检，本周内预约基础体检（血常规、肝肾功能、甲状腺、心电图）。'},
+      {t:'🏃 开始运动计划',d:'从每周2次、每次20分钟开始，选你喜欢的运动方式，关键是持续。'},
+      {t:'📱 减少屏幕时间',d:'睡前1小时放下手机，改用阅读或冥想替代。'}
+    ],
+    mumu:[
+      {t:'📖 建立亲子阅读时间',d:'每周固定3-4天，每次20分钟陪孩子阅读，记录进度。'},
+      {t:'📊 诊断薄弱科目',d:'拿最近一次考试或作业，逐科分析错题类型，列出具体薄弱点。'},
+      {t:'🎯 设定阶段性目标',d:'根据薄弱点，设定1个月后可量化的目标（如：数学计算正确率从60%到80%）。'},
+      {t:'📝 建立成长记录',d:'用表格或日记记录每天的学习内容、进步和问题，每周复盘。'}
+    ],
+    work:[
+      {t:'📋 列出本周所有任务',d:'按优先级排序，区分"必须完成"和"可以延后"，减少加班。'},
+      {t:'📢 主动汇报成果',d:'每周写一条简短的工作成果总结，发给上级或记录在工作日志中。'},
+      {t:'🚀 选一个长期项目',d:'找一个能提升核心能力或增加曝光度的项目，设定里程碑。'},
+      {t:'⏰ 划定工作边界',d:'设定固定的下班时间，非紧急事务第二天处理。'}
+    ],
+    finance:[
+      {t:'💰 计算应急储备',d:'计算你每月的固定开支（房租/房贷、伙食、交通等），目标是存够3-6个月。'},
+      {t:'📈 建立定投计划',d:'选择1-2只指数基金，设定每月自动定投金额，金额不重要，关键是开始。'},
+      {t:'📉 梳理债务情况',d:'列出所有债务（信用卡、贷款等），按利率从高到低排列，制定还款计划。'},
+      {t:'📊 每月记账',d:'从本月开始记录每笔支出，月底分类汇总，找出可优化的消费。'}
+    ],
+    mind:[
+      {t:'🧘 找到你的减压方式',d:'尝试3种方法（散步、冥想、看书、养植物、写日记），坚持一周找到最适合你的。'},
+      {t:'📅 安排恢复时间',d:'每天留出至少30分钟的"只为自己"的时间，不看手机，不处理工作。'},
+      {t:'📝 情绪日记',d:'每天睡前用一句话记录今天的情绪状态，一周后回顾，找到情绪波动规律。'},
+      {t:'👥 建立支持圈',d:'找出2-3个可以倾诉的人，定期交流，不要一个人扛。'}
+    ],
+    time:[
+      {t:'⏰ 记录一天的时间分配',d:'连续3天，每小时记录一次你在做什么，找出时间黑洞。'},
+      {t:'🎯 为目标预留专属时间',d:'选一个最重要的目标，每天固定时段（如早起30分钟）专门用于它。'},
+      {t:'📱 设置屏幕时间限制',d:'在手机上为短视频和社交APP设置每日使用时长上限（建议≤1小时）。'},
+      {t:'📅 周末主动规划',d:'每周四晚花10分钟列出周末安排，至少包含1项学习和1项运动。'}
+    ]
+  };
+  var items=advices[key]||[];
+  return items.map(function(it){return'<div style="margin-bottom:8px"><strong>'+it.t+'</strong><br>'+it.d+'</div>'}).join('');
+}
+
+function toggleAdvice(el){
+  var detail=el.querySelector('.advice-detail');
+  if(detail.style.display==='none'){detail.style.display='block';}
+  else{detail.style.display='none';}
+}
+
+function addGoal(){
+  var input=document.getElementById('goalInput');
+  var dim=document.getElementById('goalDim');
+  var val=input.value.trim();
+  if(!val){input.focus();return;}
+  try{
+    var goals=JSON.parse(localStorage.getItem('cockpit_road_goals')||'[]');
+    goals.push({text:val,dim:dim.value,time:Date.now()});
+    localStorage.setItem('cockpit_road_goals',JSON.stringify(goals));
+  }catch(e){}
+  input.value='';
+  dim.value='';
+  loadGoals();
+}
+
+function loadGoals(){
+  var list=document.getElementById('goalList');
+  if(!list)return;
+  try{
+    var goals=JSON.parse(localStorage.getItem('cockpit_road_goals')||'[]');
+    if(goals.length===0){
+      list.innerHTML='<div style="color:#aaa;font-size:13px;text-align:center;padding:8px">还没有添加目标，在上方输入框中制定你的目标</div>';
+      return;
+    }
+    var h='';
+    goals.forEach(function(g,i){
+      var dimObj=DIMS.find(function(d){return d.key===g.dim});
+      var dimLabel=dimObj?dimObj.name:'未分类';
+      h+='<div class="road-item" style="position:relative">'
+        +'<div style="flex:1"><div class="rt">'+g.text+'</div><div class="rd">'+dimLabel+'</div></div>'
+        +'<button onclick="removeGoal('+i+')" style="position:absolute;top:8px;right:8px;background:none;border:none;color:#ccc;font-size:16px;cursor:pointer;padding:0 4px">×</button>'
+        +'</div>';
+    });
+    list.innerHTML=h;
+  }catch(e){}
+}
+
+function removeGoal(idx){
+  try{
+    var goals=JSON.parse(localStorage.getItem('cockpit_road_goals')||'[]');
+    goals.splice(idx,1);
+    localStorage.setItem('cockpit_road_goals',JSON.stringify(goals));
+    loadGoals();
+  }catch(e){}
 }
 function updateOverview(){
   if(qStep<DIMS.length)return;
-  var total=0,max=0;DIMS.forEach(function(d){total+=qScores[d.key]||0;max+=d.max||10});
+  var total=0,max=0;DIMS.forEach(function(d){total+=qScores[d.key]||0;max+=30});
   var pct=Math.round(total/max*100);
   var el=document.getElementById('scoreNum');
   if(el)el.textContent=pct+'%';
@@ -250,7 +403,7 @@ function updateOverview(){
   if(!grid)return;
   var html='';
   DIMS.forEach(function(d){
-    var s=qScores[d.key]||0;var m=10;
+    var s=qScores[d.key]||0;var m=30;
     html+='<div style="text-align:center"><div style="width:40px;height:40px;border-radius:50%;background:'+d.color+'20;display:flex;align-items:center;justify-content:center;margin:0 auto 4px"><span style="font-size:14px;font-weight:700;color:'+d.color+'">'+s+'</span></div><span style="font-size:11px;color:#888">'+d.name+'</span></div>';
   });
   grid.innerHTML=html;
@@ -275,7 +428,7 @@ function renderDimGrid(){
 
 /* ===== 全景总览渲染 ===== */
 function renderOverview(){
-  var total=0,max=0;DIMS.forEach(function(d){total+=qScores[d.key]||0;max+=d.max||10});
+  var total=0,max=0;DIMS.forEach(function(d){total+=qScores[d.key]||0;max+=30});
   var pct=Math.round(total/max*100);
   var level=pct>=80?'优秀':pct>=60?'良好':pct>=40?'一般':'待提升';
   var lc=pct>=80?'var(--green)':pct>=60?'var(--blue)':pct>=40?'var(--yellow)':'var(--red)';
@@ -298,7 +451,7 @@ function renderOverview(){
   if(!grid)return;
   var html='';
   DIMS.forEach(function(d){
-    var s=qScores[d.key]||0;var m=10;var p=Math.round(s/m*100);
+    var s=qScores[d.key]||0;var m=30;var p=Math.round(s/m*100);
     html+='<div class="dim-card">'
       +'<div class="dim-icon" style="color:'+d.color+'">'+d.icon+'</div>'
       +'<div class="dim-label">'+d.name+'</div>'
@@ -391,7 +544,7 @@ function exportRecords(){
 function updateRouteIndicator(){
   var el=document.getElementById('routeIndicator');
   if(!el)return;
-  var total=0,max=0;DIMS.forEach(function(d){total+=qScores[d.key]||0;max+=d.max||10});
+  var total=0,max=0;DIMS.forEach(function(d){total+=qScores[d.key]||0;max+=30});
   var pct=Math.round(total/max*100);
   if(pct>=80)el.textContent="🚀 全速前进 — 维持当前节奏，向更高目标冲刺";
   else if(pct>=60)el.textContent="🛤️ 稳步前行 — 各维度发展均衡，保持一致性";
@@ -611,7 +764,7 @@ function saveReview(){
 /* ===== 偏航检测 ===== */
 function renderDeviation(){
   var box=document.getElementById('devContent');if(!box)return;
-  var total=0,max=0;DIMS.forEach(function(d){total+=qScores[d.key]||0;max+=d.max||10});
+  var total=0,max=0;DIMS.forEach(function(d){total+=qScores[d.key]||0;max+=30});
   var pct=Math.round(total/max*100);
 
   var checks=[];
