@@ -74,7 +74,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
 </style></head><body>
 <div class="app">
-<div class="header"><h1>人生驾驶舱 <span style="font-size:11px;color:var(--text3);font-weight:400">v5</span></h1><p class="sub">杨桦 · 清清楚楚、有钱、有安全感</p></div>
+<div class="header"><h1>人生驾驶舱 <span style="font-size:11px;color:var(--text3);font-weight:400">v5</span></h1><p class="sub">我的生活驾驶舱</p></div>
 <div class="tabs">
   <div class="tab active" onclick="switchTab(this,'overview')">全景总览</div>
   <div class="tab" onclick="switchTab(this,'questionnaire')">七维测评</div>
@@ -93,11 +93,11 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 <div class="panel" id="panel-roadmap">
   <h2 class="section-title">三条增长路径</h2>
   <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:4px">
-    <div class="road-item"><div><div class="rt">✅ 学历通关</div><div class="rd">成考本科2025年毕业</div></div><span class="rtag tag-done">已完成</span></div>
-    <div class="road-item"><div><div class="rt">🚀 中级职称（今年内）</div><div class="rd">6000→7000~8000/月 · 结果待公布</div></div><span class="rtag tag-doing">进行中</span></div>
-    <div class="road-item"><div><div class="rt">📈 所长岗位（1~2年）</div><div class="rd">再+3000~8000/月</div></div><span class="rtag tag-wait">等待时机</span></div>
-    <div class="road-item"><div><div class="rt">🎯 投资收益（长期）</div><div class="rd">39.5万 · 每周定投500</div></div><span class="rtag tag-doing">进行中</span></div>
-    <div class="road-item"><div><div class="rt">✍️ 内容创作变现</div><div class="rd">AI辅助 · 公众号</div></div><span class="rtag tag-wait">待启动</span></div>
+    <div class="road-item"><div><div class="rt">✅ 学历通关</div><div class="rd">达成既定学历目标</div></div><span class="rtag tag-done">已完成</span></div>
+    <div class="road-item"><div><div class="rt">🚀 职业晋升</div><div class="rd">提升专业能力与职级</div></div><span class="rtag tag-doing">进行中</span></div>
+    <div class="road-item"><div><div class="rt">📈 管理进阶</div><div class="rd">向管理岗位发展</div></div><span class="rtag tag-wait">等待时机</span></div>
+    <div class="road-item"><div><div class="rt">🎯 财务增长</div><div class="rd">建立投资理财体系</div></div><span class="rtag tag-doing">进行中</span></div>
+    <div class="road-item"><div><div class="rt">✍️ 副业探索</div><div class="rd">发展内容创作或副业收入</div></div><span class="rtag tag-wait">待启动</span></div>
   </div>
 </div>
 <div class="panel" id="panel-deviation"><h2 class="section-title">偏航检测</h2><div class="dev-section" id="devContent"></div></div>
@@ -120,11 +120,11 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 </div>
 <div class="chat-bar"><div class="chat-bar-inner"><div class="route-indicator" id="routeIndicator">💬 聊天</div><input type="text" id="chatInput" placeholder="输入记录（工作:/生活:/沐沐: 自动归档）" autocomplete="off"><button class="send-btn" onclick="sendMessage()">➤</button></div></div>
 <script>
-var TL_DATA={"2026-05-30":[{"start":"06:51","end":"08:40","cat":"娱乐","desc":"刷短剧","id":1001},{"start":"08:40","end":"08:41","cat":"家务","desc":"喂鸡、鱼、乌龟","id":1002},{"start":"08:41","end":"08:43","cat":"家务","desc":"准备早餐","id":1003},{"start":"08:43","end":"09:00","cat":"工作","desc":"完善人生驾驶舱程序","id":1004}]};
+var TL_DATA={};
 var TL_CATS={"工作":"#ff6b6b","学习":"#ffd93d","锻炼":"#6bcb77","休息":"#a78bfa","社交":"#74c0fc","娱乐":"#f783ac","家务":"#ffa94d","通勤":"#868e96","其他":"#495057"};
 function switchTab(el,name){var tabName=(typeof el==="string")?el:name;document.querySelectorAll(".tab").forEach(function(t){t.classList.remove("active");if(t.getAttribute("onclick")&&t.getAttribute("onclick").indexOf(tabName)>=0)t.classList.add("active")});document.querySelectorAll(".panel").forEach(function(p){p.classList.remove("active")});document.getElementById("panel-"+tabName).classList.add("active");window.scrollTo({top:0,behavior:"smooth"});sessionStorage.setItem("cockpit_tab",name);if(tabName==="records"){var ci=document.getElementById("chatInput");if(ci)ci.focus()}}
 var DIMS=[{key:"income",name:"💰 职业收入",color:"var(--orange)",qs:[{t:"个人收入与能力匹配吗？",o:[{l:"严重不匹配",s:2,e:"😞"},{l:"偏低但有增长路径",s:5,e:"😐"},{l:"基本匹配",s:8,e:"🙂"},{l:"超出预期",s:10,e:"😄"}]},{t:"有明确涨薪路径吗？",o:[{l:"看不到",s:1,e:"😞"},{l:"有方向不确定",s:5,e:"🤔"},{l:"清晰在推进",s:8,e:"👍"},{l:"已在路上",s:10,e:"🚀"}]}]},{key:"health",name:"🏥 身体健康",color:"var(--red)",qs:[{t:"睡眠质量如何？",o:[{l:"严重不足<6h",s:1,e:"😵"},{l:"勉强6-7h",s:4,e:"😴"},{l:"还行7-8h",s:7,e:"🙂"},{l:"很好8h+",s:10,e:"💪"}]},{t:"有需要排查的症状吗？",o:[{l:"有症状没查",s:1,e:"⚠️"},{l:"有点担心",s:4,e:"🤔"},{l:"查了在治",s:6,e:"💊"},{l:"没问题",s:10,e:"✅"}]}]},{key:"mumu",name:"👨‍👦 家庭教育",color:"var(--green)",qs:[{t:"沐沐方案执行怎样？",o:[{l:"还没开始",s:1,e:"📋"},{l:"刚开始",s:4,e:"🌱"},{l:"部分偏移",s:6,e:"🌿"},{l:"稳定进步",s:10,e:"🌳"}]},{t:"教育投入时间够吗？",o:[{l:"几乎没",s:1,e:"😞"},{l:"偶尔陪",s:4,e:"😐"},{l:"每周固定",s:7,e:"👍"},{l:"每天关注",s:10,e:"❤️"}]}]},{key:"work",name:"💼 工作状态",color:"var(--blue)",qs:[{t:"工作边界感如何？",o:[{l:"没有随时办公",s:1,e:"📱"},{l:"偶尔加班",s:5,e:"⚖️"},{l:"能分清",s:8,e:"✂️"},{l:"边界清晰",s:10,e:"🎯"}]},{t:"成果被认可吗？",o:[{l:"没人看见",s:2,e:"😢"},{l:"部分认可",s:5,e:"😐"},{l:"有发展机会",s:8,e:"📈"},{l:"上升中",s:10,e:"🏆"}]}]},{key:"finance",name:"📊 家庭财务",color:"var(--cyan)",qs:[{t:"家庭财务怎样？",o:[{l:"紧张有负债",s:1,e:"😰"},{l:"收支平衡",s:5,e:"持平"},{l:"有存款保险",s:8,e:"👍"},{l:"财务自由在望",s:10,e:"💰"}]},{t:"投资理财有计划吗？",o:[{l:"没规划",s:1,e:"❌"},{l:"有想法没做",s:4,e:"💭"},{l:"定投已建",s:7,e:"📈"},{l:"体系化",s:10,e:"📊"}]}]},{key:"mind",name:"🧠 心理状态",color:"var(--purple)",qs:[{t:"最近心理怎样？",o:[{l:"低落频繁",s:1,e:"😞"},{l:"每月几天低谷",s:4,e:"😐"},{l:"大部分不错",s:7,e:"🙂"},{l:"稳定有调节力",s:10,e:"😌"}]},{t:"有有效的调节方式吗？",o:[{l:"靠硬扛",s:1,e:"🚫"},{l:"偶尔调节",s:4,e:"🤔"},{l:"养小鸡看书等",s:7,e:"🌱"},{l:"多种方式",s:10,e:"🧘"}]}]},{key:"time",name:"⏰ 时间管理",color:"var(--pink)",qs:[{t:"时间分配合理吗？",o:[{l:"被填满",s:1,e:"😵"},{l:"很少自己时间",s:3,e:"😰"},{l:"有恢复时间",s:6,e:"😐"},{l:"工作休息平衡",s:10,e:"⚖️"}]},{t:"每天多少自己时间？",o:[{l:"几乎没有",s:1,e:"0h"},{l:"不到30分钟",s:3,e:"<30m"},{l:"1-2小时",s:6,e:"1-2h"},{l:"3小时以上",s:10,e:"3h+"}]}]}];
-var qStep=7,qScores={"income":5,"health":4,"mumu":5,"work":6,"finance":5,"mind":5,"time":8};
+var qStep=0,qScores={};
 var Q_KEY="cockpit_q_scores",REVIEW_KEY="cockpit_reviews";
 function getQScores(){try{return JSON.parse(localStorage.getItem(Q_KEY))||{}}catch(e){return{}}}
 function saveQScores(s){localStorage.setItem(Q_KEY,JSON.stringify(s))}
@@ -252,11 +252,9 @@ function renderOverview(){
 
 /* ===== 提醒中心 ===== */
 var reminders=[
-  {title:"每日采记",cron:"21:30",icon:"📋",cat:"日常"},
-  {title:"体检提醒",cron:"每月",icon:"🏥",cat:"健康",desc:"甲功三项+心电图"},
-  {title:"职称查询",cron:"待定",icon:"📝",cat:"工作",desc:"主治医师考试成绩"},
-  {title:"睡眠追踪",cron:"21:00",icon:"🌙",cat:"健康"},
-  {title:"沐沐追踪表",cron:"周日",icon:"👶",cat:"家庭"}
+  {title:"每日复盘",cron:"21:30",icon:"📋",cat:"日常"},
+  {title:"健康检查",cron:"每月",icon:"🏥",cat:"健康"},
+  {title:"睡眠追踪",cron:"22:00",icon:"🌙",cat:"健康"}
 ];
 function getNextOccurrence(r){
   if(r.cron==="每月")return"每月1号";
