@@ -124,7 +124,7 @@ var TL_DATA={"2026-05-30":[{"start":"06:51","end":"08:40","cat":"娱乐","desc":
 var TL_CATS={"工作":"#ff6b6b","学习":"#ffd93d","锻炼":"#6bcb77","休息":"#a78bfa","社交":"#74c0fc","娱乐":"#f783ac","家务":"#ffa94d","通勤":"#868e96","其他":"#495057"};
 function switchTab(el,name){var tabName=(typeof el==="string")?el:name;document.querySelectorAll(".tab").forEach(function(t){t.classList.remove("active");if(t.getAttribute("onclick")&&t.getAttribute("onclick").indexOf(tabName)>=0)t.classList.add("active")});document.querySelectorAll(".panel").forEach(function(p){p.classList.remove("active")});document.getElementById("panel-"+tabName).classList.add("active");window.scrollTo({top:0,behavior:"smooth"});sessionStorage.setItem("cockpit_tab",name);if(tabName==="records"){var ci=document.getElementById("chatInput");if(ci)ci.focus()}}
 var DIMS=[{key:"income",name:"💰 职业收入",color:"var(--orange)",qs:[{t:"个人收入与能力匹配吗？",o:[{l:"严重不匹配",s:2,e:"😞"},{l:"偏低但有增长路径",s:5,e:"😐"},{l:"基本匹配",s:8,e:"🙂"},{l:"超出预期",s:10,e:"😄"}]},{t:"有明确涨薪路径吗？",o:[{l:"看不到",s:1,e:"😞"},{l:"有方向不确定",s:5,e:"🤔"},{l:"清晰在推进",s:8,e:"👍"},{l:"已在路上",s:10,e:"🚀"}]}]},{key:"health",name:"🏥 身体健康",color:"var(--red)",qs:[{t:"睡眠质量如何？",o:[{l:"严重不足<6h",s:1,e:"😵"},{l:"勉强6-7h",s:4,e:"😴"},{l:"还行7-8h",s:7,e:"🙂"},{l:"很好8h+",s:10,e:"💪"}]},{t:"有需要排查的症状吗？",o:[{l:"有症状没查",s:1,e:"⚠️"},{l:"有点担心",s:4,e:"🤔"},{l:"查了在治",s:6,e:"💊"},{l:"没问题",s:10,e:"✅"}]}]},{key:"mumu",name:"👨‍👦 家庭教育",color:"var(--green)",qs:[{t:"沐沐方案执行怎样？",o:[{l:"还没开始",s:1,e:"📋"},{l:"刚开始",s:4,e:"🌱"},{l:"部分偏移",s:6,e:"🌿"},{l:"稳定进步",s:10,e:"🌳"}]},{t:"教育投入时间够吗？",o:[{l:"几乎没",s:1,e:"😞"},{l:"偶尔陪",s:4,e:"😐"},{l:"每周固定",s:7,e:"👍"},{l:"每天关注",s:10,e:"❤️"}]}]},{key:"work",name:"💼 工作状态",color:"var(--blue)",qs:[{t:"工作边界感如何？",o:[{l:"没有随时办公",s:1,e:"📱"},{l:"偶尔加班",s:5,e:"⚖️"},{l:"能分清",s:8,e:"✂️"},{l:"边界清晰",s:10,e:"🎯"}]},{t:"成果被认可吗？",o:[{l:"没人看见",s:2,e:"😢"},{l:"部分认可",s:5,e:"😐"},{l:"有发展机会",s:8,e:"📈"},{l:"上升中",s:10,e:"🏆"}]}]},{key:"finance",name:"📊 家庭财务",color:"var(--cyan)",qs:[{t:"家庭财务怎样？",o:[{l:"紧张有负债",s:1,e:"😰"},{l:"收支平衡",s:5,e:"持平"},{l:"有存款保险",s:8,e:"👍"},{l:"财务自由在望",s:10,e:"💰"}]},{t:"投资理财有计划吗？",o:[{l:"没规划",s:1,e:"❌"},{l:"有想法没做",s:4,e:"💭"},{l:"定投已建",s:7,e:"📈"},{l:"体系化",s:10,e:"📊"}]}]},{key:"mind",name:"🧠 心理状态",color:"var(--purple)",qs:[{t:"最近心理怎样？",o:[{l:"低落频繁",s:1,e:"😞"},{l:"每月几天低谷",s:4,e:"😐"},{l:"大部分不错",s:7,e:"🙂"},{l:"稳定有调节力",s:10,e:"😌"}]},{t:"有有效的调节方式吗？",o:[{l:"靠硬扛",s:1,e:"🚫"},{l:"偶尔调节",s:4,e:"🤔"},{l:"养小鸡看书等",s:7,e:"🌱"},{l:"多种方式",s:10,e:"🧘"}]}]},{key:"time",name:"⏰ 时间管理",color:"var(--pink)",qs:[{t:"时间分配合理吗？",o:[{l:"被填满",s:1,e:"😵"},{l:"很少自己时间",s:3,e:"😰"},{l:"有恢复时间",s:6,e:"😐"},{l:"工作休息平衡",s:10,e:"⚖️"}]},{t:"每天多少自己时间？",o:[{l:"几乎没有",s:1,e:"0h"},{l:"不到30分钟",s:3,e:"<30m"},{l:"1-2小时",s:6,e:"1-2h"},{l:"3小时以上",s:10,e:"3h+"}]}]}];
-var qStep=0,qScores={};
+var qStep=7,qScores={"income":5,"health":4,"mumu":5,"work":6,"finance":5,"mind":5,"time":8};
 var Q_KEY="cockpit_q_scores",REVIEW_KEY="cockpit_reviews";
 function getQScores(){try{return JSON.parse(localStorage.getItem(Q_KEY))||{}}catch(e){return{}}}
 function saveQScores(s){localStorage.setItem(Q_KEY,JSON.stringify(s))}
@@ -135,20 +135,20 @@ function renderQuestionnaire(){
   var box=document.getElementById('qContent');
   if(qStep>=DIMS.length){renderQResult();return;}
   var d=DIMS[qStep];
-  var q=d.questions[0];
+  var qObj=d.qs[0];
   box.innerHTML='<div style="text-align:center;margin-bottom:12px"><span style="background:#f0f0f0;padding:4px 12px;border-radius:20px;font-size:13px;color:#888">维度 '+(qStep+1)+' / '+DIMS.length+'</span></div>'
     +'<h3 style="margin:0 0 8px;font-size:20px;color:#333">'+d.name+'</h3>'
-    +'<p style="color:#666;margin:0 0 20px;font-size:14px">'+q+'</p>'
+    +'<p style="color:#666;margin:0 0 20px;font-size:14px">'+qObj.t+'</p>'
     +'<div id="q-options" style="display:flex;flex-direction:column;gap:10px"></div>';
-  var opts=d.options;
+  var opts=qObj.o;
   var optBox=document.getElementById('q-options');
   opts.forEach(function(o,i){
     var btn=document.createElement('button');
-    btn.textContent=o.label;
+    btn.textContent=o.e+' '+o.l;
     btn.style.cssText='padding:14px 20px;border:2px solid #e0e0e0;border-radius:10px;background:#fff;font-size:15px;cursor:pointer;transition:all .2s;text-align:left';
     btn.onmouseover=function(){btn.style.borderColor=d.color;btn.style.background=d.color+'10'};
     btn.onmouseout=function(){btn.style.borderColor='#e0e0e0';btn.style.background='#fff'};
-    btn.onclick=function(){answerQ(d.key,o.score)};
+    btn.onclick=function(){answerQ(d.key,o.s)};
     optBox.appendChild(btn);
   });
 }
@@ -167,7 +167,7 @@ function renderQResult(){
     +'<div style="font-size:16px;color:#666;margin-top:4px">综合评分 · '+level+'</div></div>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">';
   DIMS.forEach(function(d){
-    var s=qScores[d.key]||0;var m=d.max||10;var p=Math.round(s/m*100);
+    var s=qScores[d.key]||0;var m=10;var p=Math.round(s/m*100);
     html+='<div style="background:#f8f9fa;border-radius:10px;padding:14px">'
       +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'
       +'<span style="font-weight:600;font-size:14px;color:#333">'+d.name+'</span>'
@@ -192,7 +192,7 @@ function updateOverview(){
   if(!grid)return;
   var html='';
   DIMS.forEach(function(d){
-    var s=qScores[d.key]||0;var m=d.max||10;
+    var s=qScores[d.key]||0;var m=10;
     html+='<div style="text-align:center"><div style="width:40px;height:40px;border-radius:50%;background:'+d.color+'20;display:flex;align-items:center;justify-content:center;margin:0 auto 4px"><span style="font-size:14px;font-weight:700;color:'+d.color+'">'+s+'</span></div><span style="font-size:11px;color:#888">'+d.name+'</span></div>';
   });
   grid.innerHTML=html;
@@ -240,7 +240,7 @@ function renderOverview(){
   if(!grid)return;
   var html='';
   DIMS.forEach(function(d){
-    var s=qScores[d.key]||0;var m=d.max||10;var p=Math.round(s/m*100);
+    var s=qScores[d.key]||0;var m=10;var p=Math.round(s/m*100);
     html+='<div class="dim-card">'
       +'<div class="dim-icon" style="color:'+d.color+'">'+d.icon+'</div>'
       +'<div class="dim-label">'+d.name+'</div>'
@@ -595,7 +595,7 @@ function renderDeviation(){
 (function(){
   qScores=getQScores();
   loadRecords();
-  if(qStep>=DIMS.length){renderQResult()}else{renderQuestionnaire()}
+  if(qStep>=DIMS.length){renderQResult();renderOverview()}else{renderQuestionnaire()}
   renderOverview();
   renderReminders();
   renderTimeline();
@@ -607,9 +607,7 @@ function renderDeviation(){
     chatRecords.forEach(function(r){renderMessage(r.text,r.from)});
     updateStats();
   }
-  var defaultTab='overview';
-  if(qStep<DIMS.length)defaultTab='questionnaire';
-  switchTab(defaultTab);
+  switchTab('overview');
 })();
 </script>
 </body>
