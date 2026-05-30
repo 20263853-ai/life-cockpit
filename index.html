@@ -123,22 +123,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 var TL_DATA={"2026-05-30":[{"start":"06:51","end":"08:40","cat":"娱乐","desc":"刷短剧","id":1001},{"start":"08:40","end":"08:41","cat":"家务","desc":"喂鸡、鱼、乌龟","id":1002},{"start":"08:41","end":"08:43","cat":"家务","desc":"准备早餐","id":1003},{"start":"08:43","end":"09:00","cat":"工作","desc":"完善人生驾驶舱程序","id":1004}]};
 var TL_CATS={"工作":"#ff6b6b","学习":"#ffd93d","锻炼":"#6bcb77","休息":"#a78bfa","社交":"#74c0fc","娱乐":"#f783ac","家务":"#ffa94d","通勤":"#868e96","其他":"#495057"};
 
-function addGoal(){
-  var input=document.getElementById('newGoalInput');
-  var val=input.value.trim();
-  if(!val)return;
-  var list=document.getElementById('roadList');
-  var item=document.createElement('div');
-  item.className='road-item';
-  item.innerHTML='<div><div class="rt">🎯 '+val+'</div><div class="rd">自定义目标</div></div><span class="rtag tag-wait">进行中</span>';
-  list.appendChild(item);
-  input.value='';
-  try{
-    var goals=JSON.parse(localStorage.getItem('cockpit_road_goals')||'[]');
-    goals.push(val);
-    localStorage.setItem('cockpit_road_goals',JSON.stringify(goals));
-  }catch(e){}
-}
+
 
 function renderRoadmap(){
   var rc=document.getElementById('roadContent');
@@ -554,6 +539,10 @@ function sendMessage(){
   saveRecords();input.value='';
   renderMessage(msg,'user');
   setTimeout(function(){
+  // 版本控制 - 升级后自动清除旧数据
+  var COCKPIT_VERSION="v6-20260530";
+  try{var cv=localStorage.getItem("cockpit_version");if(cv!==COCKPIT_VERSION){localStorage.removeItem("cockpit_q_scores");localStorage.removeItem("cockpit_reviews");localStorage.removeItem("cockpit_road_goals")}localStorage.setItem("cockpit_version",COCKPIT_VERSION)}catch(e){}
+
     var reply="已记录: "+msg;
     chatRecords.push({text:reply,time:new Date().toLocaleString('zh-CN'),from:'ai'});
     saveRecords();renderMessage(reply,'ai');
