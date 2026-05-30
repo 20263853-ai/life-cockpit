@@ -632,13 +632,15 @@ function saveReview(){
 /* ===== 偏航检测 ===== */
 function renderDeviation(){
   var box=document.getElementById('devContent');if(!box)return;
+  var hasScores=Object.keys(qScores).length>0;
+  if(!hasScores){box.innerHTML='<div style="text-align:center;color:#aaa;padding:40px 0;font-size:14px">完成「七维测评」后，这里将自动检测各维度偏航情况</div>';return;}
   var total=0,max=0;DIMS.forEach(function(d){total+=qScores[d.key]||0;max+=d.max||10});
   var pct=Math.round(total/max*100);
 
   var checks=[];
   if(pct<50)checks.push({level:'warn',text:'综合评分低于50%，建议重新评估各维度优先级'});
   if((qScores['health']||0)<5)checks.push({level:'warn',text:'身体维度得分偏低，请注意健康管理和睡眠质量'});
-  if((qScores['mumu']||0)<5)checks.push({level:'warn',text:'沐沐维度得分偏低，建议增加陪伴和关注时间'});
+  if((qScores['mumu']||0)<5)checks.push({level:'warn',text:'家庭教育维度得分偏低，建议增加陪伴和关注时间'});
   if((qScores['finance']||0)<5)checks.push({level:'warn',text:'财务维度得分偏低，建议审视投资组合和理财计划'});
   if((qScores['work']||0)<5)checks.push({level:'warn',text:'工作维度得分偏低，注意职业发展是否需要调整方向'});
 
@@ -649,7 +651,7 @@ function renderDeviation(){
   todayEntries.forEach(function(e){
     var dur=calcDuration(e.start,e.end);
     if(e.cat==='work')workMin+=dur;
-    if(e.cat==='study'||e.cat==='mumu')learnMin+=dur;
+    if(e.cat==='study'||e.cat==='family')learnMin+=dur;
   });
   if(todayEntries.length>0&&workMin<60)checks.push({level:'info',text:'今日工作时间不足1小时，注意工作效率分配'});
   if(todayEntries.length>0&&learnMin<30)checks.push({level:'info',text:'今日学习/成长时间不足30分钟'});
