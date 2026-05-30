@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
+<meta http-equiv="refresh" content="60">
+<title>人生驾驶舱 v5</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a1a;--card:#111128;--border:#1e1e3a;--text:#e0e0e0;--text2:#8888aa;--text3:#555577;--blue:#4a90d9;--green:#4caf50;--yellow:#f0c040;--orange:#ff8c42;--red:#ff6b6b;--cyan:#26c6da;--purple:#a78bfa;--pink:#f783ac;--r:12px;--rs:8px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.6;padding-bottom:70px}
+.app{max-width:720px;margin:0 auto;padding:16px}
+.header{text-align:center;padding:24px 0 16px}
+.header h1{font-size:24px}.header .sub{font-size:13px;color:var(--text3);margin-top:4px}
+.tabs{display:flex;gap:4px;overflow-x:auto;padding:4px 0 12px;-webkit-overflow-scrolling:touch}.tabs::-webkit-scrollbar{display:none}
+.tab{padding:8px 14px;border-radius:8px;font-size:13px;cursor:pointer;white-space:nowrap;color:var(--text3);background:transparent;border:1px solid transparent;transition:all .2s}.tab.active{color:var(--yellow);background:var(--card);border-color:var(--border)}.tab:hover:not(.active){color:var(--text2)}
+.panel{display:none;animation:fadeIn .3s ease}.panel.active{display:block}
+.section-title{font-size:16px;font-weight:700;margin-bottom:16px}
+.total-card{display:flex;gap:20px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;align-items:center;margin-bottom:16px}
+.score-ring{position:relative;width:100px;height:100px;flex-shrink:0}.score-ring svg{transform:rotate(-90deg)}.ring-bg{fill:none;stroke:var(--border);stroke-width:8}.ring-fg{fill:none;stroke:var(--border);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .8s}
+.score-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column}.score-center .n{font-size:28px;font-weight:800}.score-center .l{font-size:11px;color:var(--text3)}
+.total-info h2{font-size:15px;margin-bottom:8px}.total-info p{font-size:12px;color:var(--text2);line-height:1.7}
+.overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.dim-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;cursor:pointer;transition:border-color .2s}.dim-card:hover{border-color:var(--blue)}
+.dim-title{font-size:13px;font-weight:600;margin-bottom:4px}.dim-score{font-size:22px;font-weight:800;margin-bottom:2px}.dim-desc{font-size:11px;color:var(--text2)}
+.road-item{display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid var(--border)}.road-item:last-child{border-bottom:none}
+.rt{font-size:14px;font-weight:600}.rd{font-size:12px;color:var(--text2);margin-top:2px;line-height:1.6}.rtag{font-size:11px;padding:3px 8px;border-radius:6px;white-space:nowrap;margin-top:6px}
+.tag-done{background:rgba(76,175,80,.15);color:var(--green)}.tag-doing{background:rgba(255,140,66,.15);color:var(--orange)}.tag-wait{background:rgba(136,136,170,.15);color:var(--text2)}
+.dev-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px}
+.dev-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}.compass{font-size:24px}.dev-header h3{font-size:15px;font-weight:600}.st{font-size:12px}
+.check-list{display:flex;flex-direction:column;gap:8px}.check-item{display:flex;align-items:center;gap:8px;font-size:13px;padding:8px 12px;background:var(--bg);border-radius:var(--rs)}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}.dot-g{background:var(--green)}.dot-y{background:var(--yellow)}.dot-r{background:var(--red)}.ct{flex:1}.cs{font-size:14px}
+.reminder-list{display:flex;flex-direction:column;gap:8px}
+.reminder-item{display:flex;align-items:center;gap:12px;padding:14px;background:var(--card);border:1px solid var(--border);border-radius:var(--rs)}.rem-icon{font-size:20px;flex-shrink:0}.rem-info{flex:1}.rem-name{font-size:13px;font-weight:600}.rem-detail{font-size:11px;color:var(--text2)}.rem-countdown{font-size:11px;color:var(--blue);font-weight:600;white-space:nowrap}
+.record-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}.stat-box{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:14px;text-align:center}.stat-box .num{font-size:24px;font-weight:800}.stat-box .lbl{font-size:11px;color:var(--text3);margin-top:2px}
+.chat-history{max-height:400px;overflow-y:auto;padding:4px 0}.chat-empty{text-align:center;color:var(--text3);font-size:13px;padding:24px 0}
+.chat-bubble{max-width:80%;padding:10px 14px;border-radius:12px;margin-bottom:8px;font-size:13px;line-height:1.5}.chat-bubble.user{margin-left:auto;background:var(--blue);color:#fff;border-bottom-right-radius:4px}.chat-bubble.ai{margin-right:auto;background:var(--card);border:1px solid var(--border);border-bottom-left-radius:4px}
+.chat-bar{position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:1px solid var(--border);padding:12px 16px;z-index:100}.chat-bar-inner{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:8px}
+.route-indicator{font-size:11px;color:var(--text3);white-space:nowrap;min-width:80px}
+.chat-bar input{flex:1;background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:10px;font-size:13px;outline:none}.chat-bar input:focus{border-color:var(--blue)}
+.send-btn{width:38px;height:38px;border-radius:50%;border:none;background:var(--blue);color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.btn{padding:10px 20px;border-radius:8px;border:none;font-size:13px;cursor:pointer;transition:opacity .2s}.btn:hover{opacity:.85}.btn-primary{background:var(--blue);color:#fff}.btn-secondary{background:var(--card);border:1px solid var(--border);color:var(--text2)}
+.badge{background:var(--red);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;margin-left:4px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.q-progress{display:flex;gap:4px;margin-bottom:20px}.q-dot{width:100%;height:6px;border-radius:3px;background:var(--border);transition:background .3s}.q-dot.done{background:var(--green)}.q-dot.current{background:var(--blue)}
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:16px}.q-card h3{font-size:15px;margin-bottom:6px}.q-card .q-hint{font-size:12px;color:var(--text2);margin-bottom:16px}
+.q-options{display:flex;flex-direction:column;gap:8px}.q-opt{padding:12px 16px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:13px;transition:all .2s;display:flex;align-items:center;gap:10px}.q-opt:hover{border-color:var(--blue);background:rgba(74,144,217,.08)}
+.q-opt .q-emoji{font-size:18px;flex-shrink:0}.q-opt .q-text{flex:1}.q-opt .q-val{font-size:11px;color:var(--text3)}
+.q-result{text-align:center;padding:40px 20px}.q-result .big-score{font-size:48px;font-weight:800;color:var(--yellow)}.q-result .big-total{font-size:16px;color:var(--text3)}
+.q-dim-results{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:24px}.q-dim-item{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:12px;text-align:center}.q-dim-item .dn{font-size:12px;color:var(--text2)}.q-dim-item .ds{font-size:20px;font-weight:800}
+.review-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px}.review-section h3{font-size:14px;color:var(--text2);margin-bottom:12px}
+.review-dim{margin-bottom:16px}.review-dim:last-child{margin-bottom:0}.review-dim-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}.review-dim-head .dn{font-size:13px;font-weight:600;flex:1}.review-dim-head .ds{font-size:13px;color:var(--text3)}
+.review-input{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:8px;font-size:13px;resize:vertical;min-height:60px;outline:none}.review-input:focus{border-color:var(--blue)}
+.review-entry{padding:12px 0;border-bottom:1px solid var(--border);font-size:12px}.review-entry:last-child{border-bottom:none}.review-entry .re-date{color:var(--blue);font-weight:600}.review-entry .re-score{color:var(--yellow);font-weight:600;margin-left:8px}
+.tl-date-nav{display:flex;align-items:center;gap:12px;margin-bottom:16px}.tl-date-nav .date-display{font-size:16px;font-weight:700;color:var(--yellow)}.tl-date-nav button{background:var(--card);border:1px solid var(--border);color:var(--text2);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px}.tl-date-nav button:hover{border-color:var(--blue)}
+.tl-btn-sm{padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text2);font-size:11px;cursor:pointer}
+.tl-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}.tl-summary .s-box{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:12px;text-align:center}.tl-summary .s-num{font-size:20px;font-weight:800}.tl-summary .s-lbl{font-size:11px;color:var(--text3);margin-top:2px}
+.tl-form{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px}.tl-form h3{font-size:14px;color:var(--text2);margin:0 0 12px 0}
+.tl-row{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}.tl-row label{font-size:12px;color:var(--text3);min-width:50px}
+.tl-row input,.tl-row select{background:#1a1a2e;border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:6px;font-size:13px}.tl-row input:focus,.tl-row select:focus{border-color:var(--blue);outline:none}
+.tl-row input[type="time"]{width:110px}.tl-row select{width:130px}.tl-row input[type="text"]{flex:1;min-width:150px}
+.tl-btn{padding:8px 18px;border-radius:8px;border:none;background:var(--blue);color:#fff;font-size:13px;cursor:pointer}.tl-btn:hover{opacity:.85}
+.tl-chart{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px}.tl-chart h3{font-size:14px;color:var(--text2);margin:0 0 16px 0}
+.tl-pie-area{display:flex;align-items:center;justify-content:center;gap:30px;margin-bottom:16px;flex-wrap:wrap}.tl-pie-legend{display:flex;flex-direction:column;gap:6px}
+.tl-bar-container{display:flex;flex-direction:column;gap:8px}.tl-bar-row{display:flex;align-items:center;gap:10px;font-size:12px}.tl-bar-label{width:60px;color:var(--text3);text-align:right;flex-shrink:0}
+.tl-bar-track{flex:1;height:22px;background:#0d0d1a;border-radius:11px;overflow:hidden}.tl-bar-fill{height:100%;border-radius:11px;transition:width .5s;display:flex;align-items:center;padding-left:8px;font-size:11px;font-weight:600;color:#fff;min-width:fit-content}
+.tl-bar-hours{width:50px;color:var(--text3);text-align:right;font-size:11px;flex-shrink:0}
+.tl-entries{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px}.tl-entries h3{font-size:14px;color:var(--text2);margin:0 0 12px 0}
+.tl-entry{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}.tl-entry:last-child{border-bottom:none}
+.tl-entry .time{color:var(--blue);font-weight:600;min-width:110px;font-size:12px;font-family:monospace}.tl-entry .cat-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.tl-entry .desc{flex:1;color:var(--text)}.tl-entry .dur{color:var(--text3);font-size:11px}.tl-entry .del-btn{color:var(--text3);cursor:pointer;font-size:16px;padding:2px 6px;border-radius:4px}.tl-entry .del-btn:hover{color:#ff6b6b;background:rgba(255,107,107,.1)}
+.tl-empty{text-align:center;color:var(--text3);font-size:13px;padding:24px 0}
+@media(max-width:768px){.total-card{flex-direction:column;text-align:center;gap:16px;padding:16px}.overview-grid,.q-dim-results{grid-template-columns:1fr}.header h1{font-size:20px}.record-stats,.tl-summary{grid-template-columns:1fr}.chat-bubble{max-width:85%}}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
+</style></head><body>
+<div class="app">
+<div class="header"><h1>人生驾驶舱 <span style="font-size:11px;color:var(--text3);font-weight:400">v5</span></h1><p class="sub">杨桦 · 清清楚楚、有钱、有安全感</p></div>
+<div class="tabs">
+  <div class="tab active" onclick="switchTab(this,'overview')">全景总览</div>
+  <div class="tab" onclick="switchTab(this,'questionnaire')">七维测评</div>
+  <div class="tab" onclick="switchTab(this,'roadmap')">发展路线</div>
+  <div class="tab" onclick="switchTab(this,'deviation')">偏航检测</div>
+  <div class="tab" onclick="switchTab(this,'review')">月度复盘</div>
+  <div class="tab" onclick="switchTab(this,'timeline')">⏱ 时间轴</div>
+  <div class="tab" onclick="switchTab(this,'reminders')">提醒中心</div>
+  <div class="tab" onclick="switchTab(this,'records')">对话记录</div>
+</div>
+<div class="panel active" id="panel-overview">
+  <div class="total-card"><div class="score-ring"><svg viewBox="0 0 100 100" width="100" height="100"><circle class="ring-bg" cx="50" cy="50" r="42"/><circle class="ring-fg" id="scoreRing" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="264"/></svg><div class="score-center"><div class="n" id="scoreNum">0</div><div class="l">/70</div></div></div><div class="total-info"><h2>综合健康度：<span id="scoreLabel" style="color:var(--yellow)">加载中</span></h2><p id="scoreDesc">正在读取测评数据...</p></div></div>
+  <div class="overview-grid" id="dimGrid"></div>
+</div>
+<div class="panel" id="panel-questionnaire"><div id="qContent"></div></div>
+<div class="panel" id="panel-roadmap">
+  <h2 class="section-title">三条增长路径</h2>
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:4px">
+    <div class="road-item"><div><div class="rt">✅ 学历通关</div><div class="rd">成考本科2025年毕业</div></div><span class="rtag tag-done">已完成</span></div>
+    <div class="road-item"><div><div class="rt">🚀 中级职称（今年内）</div><div class="rd">6000→7000~8000/月 · 结果待公布</div></div><span class="rtag tag-doing">进行中</span></div>
+    <div class="road-item"><div><div class="rt">📈 所长岗位（1~2年）</div><div class="rd">再+3000~8000/月</div></div><span class="rtag tag-wait">等待时机</span></div>
+    <div class="road-item"><div><div class="rt">🎯 投资收益（长期）</div><div class="rd">39.5万 · 每周定投500</div></div><span class="rtag tag-doing">进行中</span></div>
+    <div class="road-item"><div><div class="rt">✍️ 内容创作变现</div><div class="rd">AI辅助 · 公众号</div></div><span class="rtag tag-wait">待启动</span></div>
+  </div>
+</div>
+<div class="panel" id="panel-deviation"><h2 class="section-title">偏航检测</h2><div class="dev-section" id="devContent"></div></div>
+<div class="panel" id="panel-review"><h2 class="section-title">月度复盘</h2><div id="reviewContent"></div><div id="review-history" style="margin-top:20px"></div></div>
+<div class="panel" id="panel-timeline">
+  <h2 class="section-title">每日时间轴</h2>
+  <div class="tl-date-nav"><button onclick="changeDate(-1)">◀</button><div class="date-display" id="tlDateDisplay">今天</div><button onclick="changeDate(1)">▶</button><button class="tl-btn-sm" onclick="goToday()">今天</button></div>
+  <div class="tl-summary"><div class="s-box"><div class="s-num" id="tlTotal" style="color:var(--yellow)">0h</div><div class="s-lbl">已记录时长</div></div><div class="s-box"><div class="s-num" id="tlProductive" style="color:var(--green)">0h</div><div class="s-lbl">高效时段</div></div><div class="s-box"><div class="s-num" id="tlCount" style="color:var(--blue)">0</div><div class="s-lbl">记录条数</div></div></div>
+  <div class="tl-form"><h3>➕ 记录时间片段</h3><div class="tl-row"><label>时段</label><input type="time" id="tlStart" value="08:00"> <span style="color:var(--text3);font-size:12px">至</span> <input type="time" id="tlEnd" value="09:00"></div><div class="tl-row"><label>分类</label><select id="tlCat"><option value="工作">工作</option><option value="学习">学习</option><option value="锻炼">锻炼</option><option value="休息">休息</option><option value="社交">社交</option><option value="娱乐">娱乐</option><option value="家务">家务</option><option value="通勤">通勤</option><option value="其他">其他</option></select></div><div class="tl-row"><label>内容</label><input type="text" id="tlDesc" placeholder="做什么"><button class="tl-btn" onclick="addTimelineEntry()">添加</button></div></div>
+  <div class="tl-chart" id="tlChartArea" style="display:none"><h3>📊 时间分配</h3><div class="tl-pie-area"><div id="tlPieContainer"></div><div class="tl-pie-legend" id="tlPieLegend"></div></div><div class="tl-bar-container" id="tlBarContainer"></div></div>
+  <div class="tl-entries"><h3>📋 时间流水</h3><div id="tlEntriesList"><div class="tl-empty">还没有时间记录</div></div></div>
+</div>
+<div class="panel" id="panel-reminders"><h2 class="section-title">提醒中心</h2><div class="reminder-list" id="reminderList"></div><div style="margin-top:24px;padding:16px;background:var(--card);border:1px solid var(--border);border-radius:var(--r)"><p style="font-size:13px;color:var(--text2)">💡 提醒由灵犀定时任务自动触发，在对话框回复一行字即可完成记录。</p></div></div>
+<div class="panel" id="panel-records">
+  <h2 class="section-title">对话记录</h2>
+  <div class="record-stats"><div class="stat-box"><div class="num" style="color:var(--orange)" id="statWork">0</div><div class="lbl">工作记录</div></div><div class="stat-box"><div class="num" style="color:var(--green)" id="statLife">0</div><div class="lbl">生活记录</div></div><div class="stat-box"><div class="num" style="color:var(--cyan)" id="statMumu">0</div><div class="lbl">沐沐记录</div></div></div>
+  <div style="margin-bottom:12px"><button onclick="exportRecords()" class="btn btn-secondary" style="font-size:12px">📋 复制全部记录</button></div>
+  <div class="chat-history" id="chatHistory"><div class="chat-empty" id="chatEmpty">还没有记录</div></div>
+</div>
+</div>
+<div class="chat-bar"><div class="chat-bar-inner"><div class="route-indicator" id="routeIndicator">💬 聊天</div><input type="text" id="chatInput" placeholder="输入记录（工作:/生活:/沐沐: 自动归档）" autocomplete="off"><button class="send-btn" onclick="sendMessage()">➤</button></div></div>
+<script>
+var TL_DATA={"2026-05-30":[{"start":"06:51","end":"08:40","cat":"娱乐","desc":"刷短剧","id":1001},{"start":"08:40","end":"08:41","cat":"家务","desc":"喂鸡、鱼、乌龟","id":1002},{"start":"08:41","end":"08:43","cat":"家务","desc":"准备早餐","id":1003},{"start":"08:43","end":"09:00","cat":"工作","desc":"完善人生驾驶舱程序","id":1004}]};
+var TL_CATS={"工作":"#ff6b6b","学习":"#ffd93d","锻炼":"#6bcb77","休息":"#a78bfa","社交":"#74c0fc","娱乐":"#f783ac","家务":"#ffa94d","通勤":"#868e96","其他":"#495057"};
+function switchTab(el,name){var tabName=(typeof el==="string")?el:name;document.querySelectorAll(".tab").forEach(function(t){t.classList.remove("active");if(t.getAttribute("onclick")&&t.getAttribute("onclick").indexOf(tabName)>=0)t.classList.add("active")});document.querySelectorAll(".panel").forEach(function(p){p.classList.remove("active")});document.getElementById("panel-"+tabName).classList.add("active");window.scrollTo({top:0,behavior:"smooth"});sessionStorage.setItem("cockpit_tab",name);if(tabName==="records"){var ci=document.getElementById("chatInput");if(ci)ci.focus()}}
+var DIMS=[{key:"income",name:"💰 职业收入",color:"var(--orange)",qs:[{t:"个人收入与能力匹配吗？",o:[{l:"严重不匹配",s:2,e:"😞"},{l:"偏低但有增长路径",s:5,e:"😐"},{l:"基本匹配",s:8,e:"🙂"},{l:"超出预期",s:10,e:"😄"}]},{t:"有明确涨薪路径吗？",o:[{l:"看不到",s:1,e:"😞"},{l:"有方向不确定",s:5,e:"🤔"},{l:"清晰在推进",s:8,e:"👍"},{l:"已在路上",s:10,e:"🚀"}]}]},{key:"health",name:"🏥 身体健康",color:"var(--red)",qs:[{t:"睡眠质量如何？",o:[{l:"严重不足<6h",s:1,e:"😵"},{l:"勉强6-7h",s:4,e:"😴"},{l:"还行7-8h",s:7,e:"🙂"},{l:"很好8h+",s:10,e:"💪"}]},{t:"有需要排查的症状吗？",o:[{l:"有症状没查",s:1,e:"⚠️"},{l:"有点担心",s:4,e:"🤔"},{l:"查了在治",s:6,e:"💊"},{l:"没问题",s:10,e:"✅"}]}]},{key:"mumu",name:"👨‍👦 家庭教育",color:"var(--green)",qs:[{t:"沐沐方案执行怎样？",o:[{l:"还没开始",s:1,e:"📋"},{l:"刚开始",s:4,e:"🌱"},{l:"部分偏移",s:6,e:"🌿"},{l:"稳定进步",s:10,e:"🌳"}]},{t:"教育投入时间够吗？",o:[{l:"几乎没",s:1,e:"😞"},{l:"偶尔陪",s:4,e:"😐"},{l:"每周固定",s:7,e:"👍"},{l:"每天关注",s:10,e:"❤️"}]}]},{key:"work",name:"💼 工作状态",color:"var(--blue)",qs:[{t:"工作边界感如何？",o:[{l:"没有随时办公",s:1,e:"📱"},{l:"偶尔加班",s:5,e:"⚖️"},{l:"能分清",s:8,e:"✂️"},{l:"边界清晰",s:10,e:"🎯"}]},{t:"成果被认可吗？",o:[{l:"没人看见",s:2,e:"😢"},{l:"部分认可",s:5,e:"😐"},{l:"有发展机会",s:8,e:"📈"},{l:"上升中",s:10,e:"🏆"}]}]},{key:"finance",name:"📊 家庭财务",color:"var(--cyan)",qs:[{t:"家庭财务怎样？",o:[{l:"紧张有负债",s:1,e:"😰"},{l:"收支平衡",s:5,e:"持平"},{l:"有存款保险",s:8,e:"👍"},{l:"财务自由在望",s:10,e:"💰"}]},{t:"投资理财有计划吗？",o:[{l:"没规划",s:1,e:"❌"},{l:"有想法没做",s:4,e:"💭"},{l:"定投已建",s:7,e:"📈"},{l:"体系化",s:10,e:"📊"}]}]},{key:"mind",name:"🧠 心理状态",color:"var(--purple)",qs:[{t:"最近心理怎样？",o:[{l:"低落频繁",s:1,e:"😞"},{l:"每月几天低谷",s:4,e:"😐"},{l:"大部分不错",s:7,e:"🙂"},{l:"稳定有调节力",s:10,e:"😌"}]},{t:"有有效的调节方式吗？",o:[{l:"靠硬扛",s:1,e:"🚫"},{l:"偶尔调节",s:4,e:"🤔"},{l:"养小鸡看书等",s:7,e:"🌱"},{l:"多种方式",s:10,e:"🧘"}]}]},{key:"time",name:"⏰ 时间管理",color:"var(--pink)",qs:[{t:"时间分配合理吗？",o:[{l:"被填满",s:1,e:"😵"},{l:"很少自己时间",s:3,e:"😰"},{l:"有恢复时间",s:6,e:"😐"},{l:"工作休息平衡",s:10,e:"⚖️"}]},{t:"每天多少自己时间？",o:[{l:"几乎没有",s:1,e:"0h"},{l:"不到30分钟",s:3,e:"<30m"},{l:"1-2小时",s:6,e:"1-2h"},{l:"3小时以上",s:10,e:"3h+"}]}]}];
+var qStep=0,qScores={};
+var Q_KEY="cockpit_q_scores",REVIEW_KEY="cockpit_reviews";
+function getQScores(){try{return JSON.parse(localStorage.getItem(Q_KEY))||{}}catch(e){return{}}}
+function saveQScores(s){localStorage.setItem(Q_KEY,JSON.stringify(s))}
+function getReviews(){try{return JSON.parse(localStorage.getItem(REVIEW_KEY))||[]}catch(e){return[]}}
+function saveReviews(r){localStorage.setItem(REVIEW_KEY,JSON.stringify(r))}
+
+function renderQuestionnaire(){
+  var box=document.getElementById('qContent');
+  if(qStep>=DIMS.length){renderQResult();return;}
+  var d=DIMS[qStep];
+  var q=d.questions[0];
+  box.innerHTML='<div style="text-align:center;margin-bottom:12px"><span style="background:#f0f0f0;padding:4px 12px;border-radius:20px;font-size:13px;color:#888">维度 '+(qStep+1)+' / '+DIMS.length+'</span></div>'
+    +'<h3 style="margin:0 0 8px;font-size:20px;color:#333">'+d.name+'</h3>'
+    +'<p style="color:#666;margin:0 0 20px;font-size:14px">'+q+'</p>'
+    +'<div id="q-options" style="display:flex;flex-direction:column;gap:10px"></div>';
+  var opts=d.options;
+  var optBox=document.getElementById('q-options');
+  opts.forEach(function(o,i){
+    var btn=document.createElement('button');
+    btn.textContent=o.label;
+    btn.style.cssText='padding:14px 20px;border:2px solid #e0e0e0;border-radius:10px;background:#fff;font-size:15px;cursor:pointer;transition:all .2s;text-align:left';
+    btn.onmouseover=function(){btn.style.borderColor=d.color;btn.style.background=d.color+'10'};
+    btn.onmouseout=function(){btn.style.borderColor='#e0e0e0';btn.style.background='#fff'};
+    btn.onclick=function(){answerQ(d.key,o.score)};
+    optBox.appendChild(btn);
+  });
+}
+function answerQ(key,score){
+  qScores[key]=score;saveQScores(qScores);
+  qStep++;renderQuestionnaire();
+}
+function renderQResult(){
+  var box=document.getElementById('qContent');
+  var total=0,max=0;DIMS.forEach(function(d){total+=qScores[d.key]||0;max+=d.max||10});
+  var pct=Math.round(total/max*100);
+  var level=pct>=80?'优秀':pct>=60?'良好':pct>=40?'一般':'待提升';
+  var lc=pct>=80?'#4CAF50':pct>=60?'#2196F3':pct>=40?'#FF9800':'#f44336';
+  var html='<div style="text-align:center;margin-bottom:20px">'
+    +'<div style="font-size:48px;font-weight:700;color:'+lc+'">'+pct+'%</div>'
+    +'<div style="font-size:16px;color:#666;margin-top:4px">综合评分 · '+level+'</div></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">';
+  DIMS.forEach(function(d){
+    var s=qScores[d.key]||0;var m=d.max||10;var p=Math.round(s/m*100);
+    html+='<div style="background:#f8f9fa;border-radius:10px;padding:14px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'
+      +'<span style="font-weight:600;font-size:14px;color:#333">'+d.name+'</span>'
+      +'<span style="font-size:13px;color:'+d.color+';font-weight:700">'+s+'/'+m+'</span></div>'
+      +'<div style="background:#e0e0e0;border-radius:4px;height:8px;overflow:hidden">'
+      +'<div style="height:100%;width:'+p+'%;background:'+d.color+';border-radius:4px;transition:width .5s"></div></div></div>';
+  });
+  html+='</div><div style="text-align:center;margin-top:20px">'
+    +'<button onclick="qStep=0;renderQuestionnaire()" style="padding:10px 24px;border:none;border-radius:8px;background:#4CAF50;color:#fff;font-size:14px;cursor:pointer">重新测评</button></div>';
+  box.innerHTML=html;
+  updateOverview();
+}
+function updateOverview(){
+  if(qStep<DIMS.length)return;
+  var total=0,max=0;DIMS.forEach(function(d){total+=qScores[d.key]||0;max+=d.max||10});
+  var pct=Math.round(total/max*100);
+  var el=document.getElementById('scoreNum');
+  if(el)el.textContent=pct+'%';
+  var bar=document.getElementById('scoreRing');
+  if(bar)bar.style.width=pct+'%';
+  var grid=document.getElementById('dimGrid');
+  if(!grid)return;
+  var html='';
+  DIMS.forEach(function(d){
+    var s=qScores[d.key]||0;var m=d.max||10;
+    html+='<div style="text-align:center"><div style="width:40px;height:40px;border-radius:50%;background:'+d.color+'20;display:flex;align-items:center;justify-content:center;margin:0 auto 4px"><span style="font-size:14px;font-weight:700;color:'+d.color+'">'+s+'</span></div><span style="font-size:11px;color:#888">'+d.name+'</span></div>';
+  });
+  grid.innerHTML=html;
+}
+function renderDimGrid(){
+  var grid=document.getElementById('dimGrid');
+  if(!grid)return;
+  grid.innerHTML='';
+  DIMS.forEach(function(d,i){
+    var s=qScores[d.key]||0;
+    var card=document.createElement('div');
+    card.style.cssText='background:#f8f9fa;border-radius:12px;padding:16px;cursor:pointer;transition:all .2s;border:2px solid transparent';
+    card.onmouseover=function(){card.style.borderColor=d.color};
+    card.onmouseout=function(){card.style.borderColor='transparent'};
+    card.innerHTML='<div style="font-size:24px;margin-bottom:4px">'+d.icon+'</div>'
+      +'<div style="font-weight:600;font-size:14px;color:#333">'+d.name+'</div>'
+      +'<div style="font-size:12px;color:#888;margin-top:4px">当前: '+s+'分</div>';
+    card.onclick=function(){qStep=i;renderQuestionnaire()};
+    grid.appendChild(card);
+  });
+}
+
+/* ===== 全景总览渲染 ===== */
+function renderOverview(){
+  var total=0,max=0;DIMS.forEach(function(d){total+=qScores[d.key]||0;max+=d.max||10});
+  var pct=Math.round(total/max*100);
+  var level=pct>=80?'优秀':pct>=60?'良好':pct>=40?'一般':'待提升';
+  var lc=pct>=80?'var(--green)':pct>=60?'var(--blue)':pct>=40?'var(--yellow)':'var(--red)';
+  var ring=document.getElementById('scoreRing');
+  if(ring){
+    var circumference=2*Math.PI*42;
+    ring.style.strokeDasharray=circumference;
+    ring.style.strokeDashoffset=circumference*(1-pct/100);
+  }
+  var numEl=document.getElementById('scoreNum');
+  if(numEl)numEl.textContent=total;
+  var labelEl=document.getElementById('scoreLabel');
+  if(labelEl){labelEl.textContent=level;labelEl.style.color=lc}
+  var descEl=document.getElementById('scoreDesc');
+  if(descEl){
+    var dimSummary=DIMS.map(function(d){var s=qScores[d.key]||0;return d.name+':'+s}).join(' / ');
+    descEl.textContent=dimSummary;
+  }
+  var grid=document.getElementById('dimGrid');
+  if(!grid)return;
+  var html='';
+  DIMS.forEach(function(d){
+    var s=qScores[d.key]||0;var m=d.max||10;var p=Math.round(s/m*100);
+    html+='<div class="dim-card">'
+      +'<div class="dim-icon" style="color:'+d.color+'">'+d.icon+'</div>'
+      +'<div class="dim-label">'+d.name+'</div>'
+      +'<div class="dim-score" style="color:'+d.color+'">'+s+'<span>/'+m+'</span></div>'
+      +'<div class="dim-bar"><div class="dim-fill" style="width:'+p+'%;background:'+d.color+'"></div></div></div>';
+  });
+  grid.innerHTML=html;
+}
+
+/* ===== 提醒中心 ===== */
+var reminders=[
+  {title:"每日采记",cron:"21:30",icon:"📋",cat:"日常"},
+  {title:"体检提醒",cron:"每月",icon:"🏥",cat:"健康",desc:"甲功三项+心电图"},
+  {title:"职称查询",cron:"待定",icon:"📝",cat:"工作",desc:"主治医师考试成绩"},
+  {title:"睡眠追踪",cron:"21:00",icon:"🌙",cat:"健康"},
+  {title:"沐沐追踪表",cron:"周日",icon:"👶",cat:"家庭"}
+];
+function getNextOccurrence(r){
+  if(r.cron==="每月")return"每月1号";
+  if(r.cron==="待定")return"待确认";
+  if(r.cron==="周日")return"本周日";
+  var parts=r.cron.split(":");
+  if(parts.length===2){
+    var now=new Date();var h=parseInt(parts[0]),m=parseInt(parts[1]);
+    var t=new Date(now);t.setHours(h,m,0,0);
+    if(t<=now)t.setDate(t.getDate()+1);
+    var diff=t-now;var mins=Math.floor(diff/60000);
+    return mins<60?mins+"分钟后":Math.floor(mins/60)+"小时"+(mins%60)+"分钟后";
+  }
+  return r.cron;
+}
+function renderReminders(){
+  var box=document.getElementById('reminderList');
+  if(!box)return;
+  var html='<div style="display:flex;flex-direction:column;gap:10px">';
+  reminders.forEach(function(r){
+    var next=getNextOccurrence(r);
+    html+='<div style="background:#f8f9fa;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px">'
+      +'<span style="font-size:28px">'+r.icon+'</span>'
+      +'<div style="flex:1"><div style="font-weight:600;font-size:14px;color:#333">'+r.title+'</div>'
+      +(r.desc?'<div style="font-size:12px;color:#888;margin-top:2px">'+r.desc+'</div>':'')
+      +'</div><span style="font-size:12px;color:#4CAF50;font-weight:600;background:#e8f5e9;padding:4px 10px;border-radius:20px">'+next+'</span></div>';
+  });
+  html+='</div>';
+  box.innerHTML=html;
+}
+
+/* ===== 对话记录 ===== */
+var RECORDS_KEY="cockpit_records";
+var chatRecords=[];
+function loadRecords(){try{chatRecords=JSON.parse(localStorage.getItem(RECORDS_KEY))||[]}catch(e){chatRecords=[]}}
+function saveRecords(){localStorage.setItem(RECORDS_KEY,JSON.stringify(chatRecords))}
+function sendMessage(){
+  var input=document.getElementById('chatInput');
+  var msg=input.value.trim();if(!msg)return;
+  chatRecords.push({text:msg,time:new Date().toLocaleString('zh-CN'),from:'user'});
+  saveRecords();input.value='';
+  renderMessage(msg,'user');
+  setTimeout(function(){
+    var reply="已记录: "+msg;
+    chatRecords.push({text:reply,time:new Date().toLocaleString('zh-CN'),from:'ai'});
+    saveRecords();renderMessage(reply,'ai');
+  },500);
+}
+function renderMessage(text,from){
+  var box=document.getElementById('chatHistory');
+  var div=document.createElement('div');
+  div.style.cssText='display:flex;flex-direction:column;'+(from==='user'?'align-items:flex-end':'align-items:flex-start')+';margin-bottom:10px';
+  var bubble=document.createElement('div');
+  bubble.textContent=text;
+  bubble.style.cssText='max-width:80%;padding:10px 14px;border-radius:12px;font-size:14px;line-height:1.5;'
+    +(from==='user'?'background:#4CAF50;color:#fff;border-bottom-right-radius:4px'
+    :'background:#f0f0f0;color:#333;border-bottom-left-radius:4px');
+  div.appendChild(bubble);
+  box.appendChild(div);
+  box.scrollTop=box.scrollHeight;
+}
+function updateStats(){
+  var today=new Date().toLocaleDateString('zh-CN');
+  var todayCount=chatRecords.filter(function(r){return r.time&&r.time.indexOf(today.replace(/\//g,'/'))>=0}).length;
+  var el=document.getElementById('statLife');
+  if(el)el.textContent='今日记录 '+todayCount+' 条';
+}
+function exportRecords(){
+  if(chatRecords.length===0){alert('暂无记录');return}
+  var text=chatRecords.map(function(r){return'['+r.from+'] '+r.time+': '+r.text}).join('\n');
+  var blob=new Blob([text],{type:'text/plain;charset=utf-8'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='对话记录.txt';a.click();
+}
+function updateRouteIndicator(){
+  var el=document.getElementById('routeIndicator');
+  if(!el)return;
+  var total=0,max=0;DIMS.forEach(function(d){total+=qScores[d.key]||0;max+=d.max||10});
+  var pct=Math.round(total/max*100);
+  if(pct>=80)el.textContent="🚀 全速前进 — 维持当前节奏，向更高目标冲刺";
+  else if(pct>=60)el.textContent="🛤️ 稳步前行 — 各维度发展均衡，保持一致性";
+  else if(pct>=40)el.textContent="🗺️ 探索阶段 — 正在寻找方向，建议聚焦2-3个核心维度";
+  else el.textContent="🧭 重新定位 — 当前需要暂停评估，明确优先级后重新出发";
+}
+
+/* ===== 时间轴 ===== */
+var tlCurrentDate=new Date().toISOString().slice(0,10);
+function getTimelineData(){
+  if(typeof TL_DATA!=='undefined'&&TL_DATA){
+    if(Array.isArray(TL_DATA)&&TL_DATA.length)return TL_DATA;
+    if(typeof TL_DATA==='object'&&!Array.isArray(TL_DATA)){
+      var arr=[];Object.keys(TL_DATA).forEach(function(k){
+        if(Array.isArray(TL_DATA[k]))TL_DATA[k].forEach(function(e){arr.push(e)});
+      });
+      return arr;
+    }
+  }
+  try{var d=localStorage.getItem('cockpit_tl');if(d)return JSON.parse(d)}catch(e){}
+  return[];
+}
+function saveTimelineData(d){localStorage.setItem('cockpit_tl',JSON.stringify(d))}
+function changeDate(offset){
+  var d=new Date(tlCurrentDate);d.setDate(d.getDate()+offset);
+  tlCurrentDate=d.toISOString().slice(0,10);
+  renderTimeline();
+}
+function goToday(){tlCurrentDate=new Date().toISOString().slice(0,10);renderTimeline()}
+function formatDateDisplay(dateStr){
+  if(dateStr===new Date().toISOString().slice(0,10))return"今天";
+  var d=new Date(dateStr);return(d.getMonth()+1)+'月'+d.getDate()+'日';
+}
+function calcDuration(start,end){
+  if(!start)return 0;
+  var sp=start.split(':').map(Number);var sm=sp[0]*60+sp[1];
+  var em;if(end){var ep=end.split(':').map(Number);em=ep[0]*60+ep[1]}
+  else{var now=new Date();em=now.getHours()*60+now.getMinutes()}
+  if(em<sm)em+=24*60;
+  return em-sm;
+}
+function addTimelineEntry(date,start,end,cat,desc){
+  var data=getTimelineData();
+  var dup=data.some(function(e){return e.date===date&&e.start===start&&e.desc===desc});
+  if(dup)return false;
+  data.push({date:date,start:start||"",end:end||"",cat:cat||"other",desc:desc||""});
+  data.sort(function(a,b){return(a.start||"").localeCompare(b.start||"")});
+  if(typeof TL_DATA!=='undefined'){
+      if(Array.isArray(TL_DATA)){TL_DATA=data}
+      else{
+        var grouped={};data.forEach(function(e){if(!grouped[e.date])grouped[e.date]=[];grouped[e.date].push(e)});
+        TL_DATA=grouped;
+      }
+    }
+    try{localStorage.setItem('cockpit_tl',JSON.stringify(data))}catch(e){}
+    return true;
+  }
+function deleteTimelineEntry(date,start,desc){
+  var data=getTimelineData();
+  data=data.filter(function(e){return!(e.date===date&&e.start===start&&e.desc===desc)});
+  if(typeof TL_DATA!=='undefined'){
+      if(Array.isArray(TL_DATA)){TL_DATA=data}
+      else{
+        var grouped={};data.forEach(function(e){if(!grouped[e.date])grouped[e.date]=[];grouped[e.date].push(e)});
+        TL_DATA=grouped;
+      }
+    }
+    saveTimelineData(data);
+    renderTimeline();
+  }
+function renderTimeline(){
+  var data=getTimelineData();
+  var dayData=data.filter(function(e){return e.date===tlCurrentDate});
+  dayData.sort(function(a,b){return(a.start||"").localeCompare(b.start||"")});
+
+  var dateEl=document.getElementById('tlDateDisplay');
+  if(dateEl)dateEl.textContent=formatDateDisplay(tlCurrentDate);
+
+  var listEl=document.getElementById('tlEntriesList');
+  if(!listEl)return;
+
+  if(dayData.length===0){
+    listEl.innerHTML='<div style="text-align:center;color:#aaa;padding:40px 0;font-size:14px">暂无时间记录</div>';
+    renderPie([]);renderBars([]);return;
+  }
+
+  var html='';
+  dayData.forEach(function(e){
+    var dur=calcDuration(e.start,e.end);
+    var durStr=dur>=60?Math.floor(dur/60)+'h'+(dur%60>0?dur%60+'m':''):dur+'m';
+    var color=TL_CATS[e.cat]?TL_CATS[e.cat].color:'#999';
+    var catName=TL_CATS[e.cat]?TL_CATS[e.cat].name:e.cat;
+    html+='<div style="display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid #f0f0f0">'
+      +'<div style="min-width:50px;font-size:13px;color:#666;font-weight:600">'+e.start+(e.end?' - '+e.end:' →')+'</div>'
+      +'<div style="width:4px;min-height:36px;background:'+color+';border-radius:2px;margin:0 4px"></div>'
+      +'<div style="flex:1"><div style="font-size:14px;color:#333;font-weight:500">'+e.desc+'</div>'
+      +'<div style="font-size:12px;color:#888;margin-top:2px">'+catName+' · '+durStr+'</div></div>'
+      +'<button onclick="deleteTimelineEntry(\''+e.date+'\',\''+e.start+'\',\''+e.desc.replace(/'/g,"\\'")+'\')" '
+      +'style="background:none;border:none;color:#ccc;font-size:16px;cursor:pointer;padding:2px 6px" title="删除">×</button>'
+      +'</div>';
+  });
+  listEl.innerHTML=html;
+  renderPie(dayData);renderBars(dayData);
+}
+function renderPie(dayData){
+  var svg=document.getElementById('tlPieContainer');if(!svg)return;
+  var catMap={};
+  dayData.forEach(function(e){var dur=calcDuration(e.start,e.end);catMap[e.cat]=(catMap[e.cat]||0)+dur});
+  var cats=Object.keys(catMap);if(cats.length===0){svg.innerHTML='<text x="100" y="105" text-anchor="middle" fill="#aaa" font-size="14">暂无数据</text>';return}
+  var total=0;cats.forEach(function(c){total+=catMap[c]});
+  var cx=100,cy=100,r=70;var paths='';var startAngle=-Math.PI/2;
+  cats.forEach(function(c){
+    var pct=catMap[c]/total;var angle=pct*Math.PI*2;
+    var x1=cx+r*Math.cos(startAngle),y1=cy+r*Math.sin(startAngle);
+    var x2=cx+r*Math.cos(startAngle+angle),y2=cy+r*Math.sin(startAngle+angle);
+    var largeArc=angle>Math.PI?1:0;
+    var color=TL_CATS[c]?TL_CATS[c].color:'#999';
+    if(pct>=1){
+      paths+='<path d="M'+cx+' '+cy+' L'+x1.toFixed(1)+' '+y1.toFixed(1)+' A'+r+' '+r+' 0 '+largeArc+' 1 '+x2.toFixed(1)+' '+y2.toFixed(1)+' Z" fill="'+color+'" opacity="0.85"/>';
+    }
+    startAngle+=angle;
+  });
+  paths+='<circle cx="'+cx+'" cy="'+cy+'" r="40" fill="white"/>';
+  paths+='<text x="'+cx+'" y="'+(cy-4)+'" text-anchor="middle" fill="#333" font-size="16" font-weight="700">'+Math.round(total/60)+'h</text>';
+  paths+='<text x="'+cx+'" y="'+(cy+14)+'" text-anchor="middle" fill="#888" font-size="11">总计</text>';
+  svg.innerHTML=paths;
+  var legendEl=document.getElementById('tlPieLegend');if(!legendEl)return;
+  var lhtml='';cats.forEach(function(c){
+    var color=TL_CATS[c]?TL_CATS[c].color:'#999';
+    var name=TL_CATS[c]?TL_CATS[c].name:c;
+    var mins=catMap[c];var h=Math.floor(mins/60),m=mins%60;
+    var timeStr=h>0?h+'h'+(m>0?m+'m':''):m+'m';
+    lhtml+='<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#555">'
+      +'<div style="width:10px;height:10px;border-radius:2px;background:'+color+'"></div>'
+      +'<span>'+name+'</span><span style="color:#aaa;margin-left:auto">'+timeStr+'</span></div>';
+  });
+  legendEl.innerHTML=lhtml;
+}
+function renderBars(dayData){
+  var box=document.getElementById('tlBarContainer');if(!box)return;
+  var catMap={};
+  dayData.forEach(function(e){var dur=calcDuration(e.start,e.end);catMap[e.cat]=(catMap[e.cat]||0)+dur});
+  var cats=Object.keys(catMap).sort(function(a,b){return catMap[b]-catMap[a]});
+  if(cats.length===0){box.innerHTML='';return}
+  var maxDur=0;cats.forEach(function(c){if(catMap[c]>maxDur)maxDur=catMap[c]});
+  var html='<div style="display:flex;flex-direction:column;gap:8px">';
+  cats.forEach(function(c){
+    var pct=Math.round(catMap[c]/maxDur*100);
+    var color=TL_CATS[c]?TL_CATS[c].color:'#999';
+    var name=TL_CATS[c]?TL_CATS[c].name:c;
+    var mins=catMap[c];var h=Math.floor(mins/60),m=mins%60;
+    var timeStr=h>0?h+'h'+(m>0?m+'m':''):m+'m';
+    html+='<div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px">'
+      +'<span style="color:#555">'+name+'</span><span style="color:#aaa">'+timeStr+'</span></div>'
+      +'<div style="background:#eee;border-radius:3px;height:8px;overflow:hidden">'
+      +'<div style="height:100%;width:'+pct+'%;background:'+color+';border-radius:3px;transition:width .5s"></div></div></div>';
+  });
+  html+='</div>';
+  box.innerHTML=html;
+}
+
+/* ===== 月度复盘 ===== */
+function renderReview(){
+  var box=document.getElementById('reviewContent');if(!box)return;
+  var reviews=getReviews();
+  var now=new Date();
+  var monthKey=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  var existing=reviews.find(function(r){return r.month===monthKey});
+
+  var html='<div style="margin-bottom:16px"><h3 style="margin:0 0 4px;font-size:18px;color:#333">'+monthKey+' 月度复盘</h3>'
+    +'<p style="color:#888;font-size:13px;margin:0">回顾本月各维度进展，记录收获与反思</p></div>';
+
+  if(existing){
+    html+='<div style="background:#f0f7f0;border:1px solid #c8e6c9;border-radius:10px;padding:16px;margin-bottom:16px">'
+      +'<div style="font-size:13px;color:#4CAF50;font-weight:600;margin-bottom:8px">✓ 已提交复盘</div>'
+      +'<div style="font-size:14px;color:#333;line-height:1.8;white-space:pre-wrap">'+existing.content+'</div></div>';
+  }
+
+  html+='<div style="display:flex;flex-direction:column;gap:14px">'
+    +'<div><label style="font-size:13px;color:#555;font-weight:600;display:block;margin-bottom:6px">本月最大收获</label>'
+    +'<textarea id="rv-win" rows="3" placeholder="本月最有成就感的事情..." style="width:100%;padding:10px;border:1px solid #e0e0e0;border-radius:8px;font-size:14px;resize:vertical;font-family:inherit;box-sizing:border-box">'+(existing&&existing.win?existing.win:'')+'</textarea></div>'
+    +'<div><label style="font-size:13px;color:#555;font-weight:600;display:block;margin-bottom:6px">需要改进的地方</label>'
+    +'<textarea id="rv-improve" rows="3" placeholder="本月做得不够好的..." style="width:100%;padding:10px;border:1px solid #e0e0e0;border-radius:8px;font-size:14px;resize:vertical;font-family:inherit;box-sizing:border-box">'+(existing&&existing.improve?existing.improve:'')+'</textarea></div>'
+    +'<div><label style="font-size:13px;color:#555;font-weight:600;display:block;margin-bottom:6px">下月核心目标（限3个）</label>'
+    +'<textarea id="rv-goals" rows="3" placeholder="每行一个目标..." style="width:100%;padding:10px;border:1px solid #e0e0e0;border-radius:8px;font-size:14px;resize:vertical;font-family:inherit;box-sizing:border-box">'+(existing&&existing.goals?existing.goals:'')+'</textarea></div>'
+    +'<button onclick="saveReview()" style="align-self:flex-end;padding:10px 28px;border:none;border-radius:8px;background:#4CAF50;color:#fff;font-size:14px;font-weight:600;cursor:pointer">保存复盘</button></div>';
+
+  box.innerHTML=html;
+
+  var historyBox=document.getElementById('review-history');if(!historyBox)return;
+  if(reviews.length===0){historyBox.innerHTML='<p style="color:#aaa;text-align:center;padding:20px;font-size:13px">暂无历史复盘</p>';return}
+  var hhtml='<h4 style="margin:0 0 12px;font-size:15px;color:#555">历史复盘</h4><div style="display:flex;flex-direction:column;gap:10px">';
+  reviews.slice().reverse().forEach(function(r){
+    hhtml+='<div style="background:#fafafa;border-radius:8px;padding:12px;border-left:3px solid #4CAF50">'
+      +'<div style="font-weight:600;font-size:13px;color:#333">'+r.month+'</div>'
+      +'<div style="font-size:13px;color:#666;margin-top:4px;white-space:pre-wrap;max-height:80px;overflow:hidden">'+r.content+'</div></div>';
+  });
+  hhtml+='</div>';
+  historyBox.innerHTML=hhtml;
+}
+function saveReview(){
+  var win=document.getElementById('rv-win').value.trim();
+  var improve=document.getElementById('rv-improve').value.trim();
+  var goals=document.getElementById('rv-goals').value.trim();
+  if(!win&&!improve&&!goals){alert('请至少填写一项内容');return}
+  var now=new Date();
+  var monthKey=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  var content='收获: '+win+'\n改进: '+improve+'\n目标: '+goals;
+  var reviews=getReviews();
+  var idx=reviews.findIndex(function(r){return r.month===monthKey});
+  if(idx>=0){reviews[idx]={month:monthKey,content:content,win:win,improve:improve,goals:goals,date:now.toISOString()}}
+  else{reviews.push({month:monthKey,content:content,win:win,improve:improve,goals:goals,date:now.toISOString()})}
+  saveReviews(reviews);
+  renderReview();
+}
+
+/* ===== 偏航检测 ===== */
+function renderDeviation(){
+  var box=document.getElementById('devContent');if(!box)return;
+  var total=0,max=0;DIMS.forEach(function(d){total+=qScores[d.key]||0;max+=d.max||10});
+  var pct=Math.round(total/max*100);
+
+  var checks=[];
+  if(pct<50)checks.push({level:'warn',text:'综合评分低于50%，建议重新评估各维度优先级'});
+  if((qScores['health']||0)<5)checks.push({level:'warn',text:'身体维度得分偏低，请注意健康管理和睡眠质量'});
+  if((qScores['mumu']||0)<5)checks.push({level:'warn',text:'沐沐维度得分偏低，建议增加陪伴和关注时间'});
+  if((qScores['finance']||0)<5)checks.push({level:'warn',text:'财务维度得分偏低，建议审视投资组合和理财计划'});
+  if((qScores['work']||0)<5)checks.push({level:'warn',text:'工作维度得分偏低，注意职业发展是否需要调整方向'});
+
+  var data=getTimelineData();
+  var today=new Date().toISOString().slice(0,10);
+  var todayEntries=data.filter(function(e){return e.date===today});
+  var workMin=0,learnMin=0;
+  todayEntries.forEach(function(e){
+    var dur=calcDuration(e.start,e.end);
+    if(e.cat==='work')workMin+=dur;
+    if(e.cat==='study'||e.cat==='mumu')learnMin+=dur;
+  });
+  if(todayEntries.length>0&&workMin<60)checks.push({level:'info',text:'今日工作时间不足1小时，注意工作效率分配'});
+  if(todayEntries.length>0&&learnMin<30)checks.push({level:'info',text:'今日学习/成长时间不足30分钟'});
+
+  if(checks.length===0)checks.push({level:'ok',text:'各维度状态正常，继续保持当前节奏'});
+
+  var icons={warn:'⚠️',info:'💡',ok:'✅'};
+  var colors={warn:'#FF9800',info:'#2196F3',ok:'#4CAF50'};
+  var bgs={warn:'#fff8e1',info:'#e3f2fd',ok:'#e8f5e9'};
+
+  var html='<div style="display:flex;flex-direction:column;gap:10px">';
+  checks.forEach(function(c){
+    html+='<div style="background:'+bgs[c.level]+';border-radius:10px;padding:14px 16px;display:flex;align-items:flex-start;gap:10px">'
+      +'<span style="font-size:20px">'+icons[c.level]+'</span>'
+      +'<div style="font-size:14px;color:'+colors[c.level]+';line-height:1.5;font-weight:500">'+c.text+'</div></div>';
+  });
+  html+='</div>';
+  box.innerHTML=html;
+}
+
+/* ===== 初始化 ===== */
+(function(){
+  qScores=getQScores();
+  loadRecords();
+  if(qStep>=DIMS.length){renderQResult()}else{renderQuestionnaire()}
+  renderOverview();
+  renderReminders();
+  renderTimeline();
+  renderReview();
+  renderDeviation();
+  updateRouteIndicator();
+  var chatMsgs=document.getElementById('chatHistory');
+  if(chatMsgs){
+    chatRecords.forEach(function(r){renderMessage(r.text,r.from)});
+    updateStats();
+  }
+  var defaultTab='overview';
+  if(qStep<DIMS.length)defaultTab='questionnaire';
+  switchTab(defaultTab);
+})();
+</script>
+</body>
+</html>
