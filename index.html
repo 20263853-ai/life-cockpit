@@ -7,59 +7,59 @@
 <title>人生驾驶舱 v5</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0f0f23;--card:#1e1e42;--card2:#1a1a3e;--border:#2a2a5a;--text:#f0f0f8;--text2:#b0b0d0;--text3:#7070a0;--blue:#60a5fa;--green:#34d399;--yellow:#fbbf24;--orange:#fb923c;--red:#f87171;--cyan:#22d3ee;--purple:#a78bfa;--pink:#f472b6;--r:14px;--rs:10px}
-body{background:var(--bg);background-image:radial-gradient(ellipse at 20% 50%,rgba(99,102,241,.08) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(168,85,247,.06) 0%,transparent 50%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.6;padding-bottom:70px}
+:root{--bg:#0a1a14;--card:#132e22;--card2:#0f2418;--border:#1e4035;--text:#e8f5e9;--text2:#a5d6a7;--text3:#66bb6a;--blue:#4fc3f7;--green:#66bb6a;--yellow:#ffd54f;--orange:#ffb74d;--red:#ef5350;--cyan:#4dd0e1;--purple:#ce93d8;--pink:#f48fb1;--r:14px;--rs:10px}
+body{background:var(--bg);background-image:radial-gradient(ellipse at 20% 50%,rgba(102,187,106,.1) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(0,150,136,.08) 0%,transparent 50%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.6;padding-bottom:70px}
 .app{max-width:720px;margin:0 auto;padding:16px}
 .header{text-align:center;padding:24px 0 16px}
-.header h1{font-size:26px;background:linear-gradient(135deg,#60a5fa,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}.header .sub{font-size:13px;color:var(--text3);margin-top:4px}
+.header h1{font-size:26px;background:linear-gradient(135deg,#66bb6a,#26a69a,#4dd0e1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}.header .sub{font-size:13px;color:var(--text3);margin-top:4px}
 .tabs{display:flex;gap:4px;overflow-x:auto;padding:4px 0 12px;-webkit-overflow-scrolling:touch}.tabs::-webkit-scrollbar{display:none}
-.tab{padding:8px 14px;border-radius:8px;font-size:13px;cursor:pointer;white-space:nowrap;color:var(--text3);background:transparent;border:1px solid transparent;transition:all .2s}.tab.active{color:#fff;background:linear-gradient(135deg,#6366f1,#8b5cf6);border-color:transparent;box-shadow:0 2px 12px rgba(99,102,241,.3)}.tab:hover:not(.active){color:var(--text2)}
+.tab{padding:8px 14px;border-radius:8px;font-size:13px;cursor:pointer;white-space:nowrap;color:var(--text3);background:transparent;border:1px solid transparent;transition:all .2s}.tab.active{color:#fff;background:linear-gradient(135deg,#2e7d32,#00897b);border-color:transparent;box-shadow:0 2px 12px rgba(46,125,50,.3)}.tab:hover:not(.active){color:var(--text2)}
 .panel{display:none;animation:fadeIn .3s ease}.panel.active{display:block}
-.section-title{font-size:16px;font-weight:700;margin-bottom:16px;padding-left:12px;border-left:3px solid #6366f1}
-.total-card{display:flex;gap:20px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;align-items:center;margin-bottom:16px;box-shadow:0 4px 24px rgba(99,102,241,.1)}
+.section-title{font-size:16px;font-weight:700;margin-bottom:16px;padding-left:12px;border-left:3px solid #66bb6a}
+.total-card{display:flex;gap:20px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;align-items:center;margin-bottom:16px;box-shadow:0 4px 24px rgba(46,125,50,.15)}
 .score-ring{position:relative;width:100px;height:100px;flex-shrink:0}.score-ring svg{transform:rotate(-90deg)}.ring-bg{fill:none;stroke:var(--border);stroke-width:8}.ring-fg{fill:none;stroke:var(--border);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .8s;filter:drop-shadow(0 0 8px rgba(96,165,250,.4))}
 .score-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column}.score-center .n{font-size:28px;font-weight:800}.score-center .l{font-size:11px;color:var(--text3)}
 .total-info h2{font-size:15px;margin-bottom:8px}.total-info p{font-size:12px;color:var(--text2);line-height:1.7}
 .overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
-.dim-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;cursor:pointer;transition:border-color .2s}.dim-card:hover{border-color:var(--blue);box-shadow:0 2px 16px rgba(96,165,250,.15);transform:translateY(-1px)}
+.dim-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;cursor:pointer;transition:border-color .2s}.dim-card:hover{border-color:#4fc3f7;box-shadow:0 2px 16px rgba(102,187,106,.15);transform:translateY(-1px)}
 .dim-title{font-size:13px;font-weight:600;margin-bottom:4px}.dim-score{font-size:22px;font-weight:800;margin-bottom:2px}.dim-desc{font-size:11px;color:var(--text2)}
 .road-item{display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid var(--border)}.road-item:last-child{border-bottom:none}
 .rt{font-size:14px;font-weight:600}.rd{font-size:12px;color:var(--text2);margin-top:2px;line-height:1.6}.rtag{font-size:11px;padding:3px 8px;border-radius:6px;white-space:nowrap;margin-top:6px}
-.tag-done{background:rgba(76,175,80,.15);color:var(--green)}.tag-doing{background:rgba(255,140,66,.15);color:var(--orange)}.tag-wait{background:rgba(136,136,170,.15);color:var(--text2)}
+.tag-done{background:rgba(76,175,80,.15);color:#66bb6a}.tag-doing{background:rgba(255,140,66,.15);color:#ffb74d}.tag-wait{background:rgba(136,136,170,.15);color:var(--text2)}
 .dev-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px}
 .dev-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}.compass{font-size:24px}.dev-header h3{font-size:15px;font-weight:600}.st{font-size:12px}
 .check-list{display:flex;flex-direction:column;gap:8px}.check-item{display:flex;align-items:center;gap:8px;font-size:13px;padding:8px 12px;background:var(--bg);border-radius:var(--rs)}
-.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}.dot-g{background:var(--green)}.dot-y{background:var(--yellow)}.dot-r{background:var(--red)}.ct{flex:1}.cs{font-size:14px}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}.dot-g{background:#66bb6a}.dot-y{background:var(--yellow)}.dot-r{background:#ef5350}.ct{flex:1}.cs{font-size:14px}
 .reminder-list{display:flex;flex-direction:column;gap:8px}
-.reminder-item{display:flex;align-items:center;gap:12px;padding:14px;background:var(--card);border:1px solid var(--border);border-radius:var(--rs)}.rem-icon{font-size:20px;flex-shrink:0}.rem-info{flex:1}.rem-name{font-size:13px;font-weight:600}.rem-detail{font-size:11px;color:var(--text2)}.rem-countdown{font-size:11px;color:var(--blue);font-weight:600;white-space:nowrap}
+.reminder-item{display:flex;align-items:center;gap:12px;padding:14px;background:var(--card);border:1px solid var(--border);border-radius:var(--rs)}.rem-icon{font-size:20px;flex-shrink:0}.rem-info{flex:1}.rem-name{font-size:13px;font-weight:600}.rem-detail{font-size:11px;color:var(--text2)}.rem-countdown{font-size:11px;color:#4fc3f7;font-weight:600;white-space:nowrap}
 .record-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}.stat-box{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:14px;text-align:center}.stat-box .num{font-size:24px;font-weight:800}.stat-box .lbl{font-size:11px;color:var(--text3);margin-top:2px}
 .chat-history{max-height:400px;overflow-y:auto;padding:4px 0}.chat-empty{text-align:center;color:var(--text3);font-size:13px;padding:24px 0}
-.chat-bubble{max-width:80%;padding:10px 14px;border-radius:12px;margin-bottom:8px;font-size:13px;line-height:1.5}.chat-bubble.user{margin-left:auto;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border-bottom-right-radius:4px}.chat-bubble.ai{margin-right:auto;background:var(--card);border:1px solid rgba(99,102,241,.3);border-bottom-left-radius:4px}
+.chat-bubble{max-width:80%;padding:10px 14px;border-radius:12px;margin-bottom:8px;font-size:13px;line-height:1.5}.chat-bubble.user{margin-left:auto;background:linear-gradient(135deg,#2e7d32,#00897b);color:#fff;border-bottom-right-radius:4px}.chat-bubble.ai{margin-right:auto;background:var(--card);border:1px solid rgba(102,187,106,.3);border-bottom-left-radius:4px}
 .chat-bar{position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:1px solid var(--border);padding:12px 16px;z-index:100}.chat-bar-inner{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:8px}
 .route-indicator{font-size:11px;color:var(--text3);white-space:nowrap;min-width:80px}
-.chat-bar input{flex:1;background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:10px;font-size:13px;outline:none}.chat-bar input:focus{border-color:var(--blue)}
-.send-btn{width:38px;height:38px;border-radius:50%;border:none;background:var(--blue);color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.btn{padding:10px 20px;border-radius:8px;border:none;font-size:13px;cursor:pointer;transition:opacity .2s}.btn:hover{opacity:.85}.btn-primary{background:var(--blue);color:#fff}.btn-secondary{background:var(--card);border:1px solid var(--border);color:var(--text2)}
-.badge{background:var(--red);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;margin-left:4px}
+.chat-bar input{flex:1;background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:10px;font-size:13px;outline:none}.chat-bar input:focus{border-color:#4fc3f7}
+.send-btn{width:38px;height:38px;border-radius:50%;border:none;background:#4fc3f7;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.btn{padding:10px 20px;border-radius:8px;border:none;font-size:13px;cursor:pointer;transition:opacity .2s}.btn:hover{opacity:.85}.btn-primary{background:#4fc3f7;color:#fff}.btn-secondary{background:var(--card);border:1px solid var(--border);color:var(--text2)}
+.badge{background:#ef5350;color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;margin-left:4px}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.q-progress{display:flex;gap:4px;margin-bottom:20px}.q-dot{width:100%;height:6px;border-radius:3px;background:var(--border);transition:background .3s}.q-dot.done{background:var(--green)}.q-dot.current{background:var(--blue)}
+.q-progress{display:flex;gap:4px;margin-bottom:20px}.q-dot{width:100%;height:6px;border-radius:3px;background:var(--border);transition:background .3s}.q-dot.done{background:#66bb6a}.q-dot.current{background:#4fc3f7}
 .q-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:16px}.q-card h3{font-size:15px;margin-bottom:6px}.q-card .q-hint{font-size:12px;color:var(--text2);margin-bottom:16px}
-.q-options{display:flex;flex-direction:column;gap:8px}.q-opt{padding:12px 16px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:13px;transition:all .2s;display:flex;align-items:center;gap:10px}.q-opt:hover{border-color:var(--blue);background:rgba(74,144,217,.08)}
+.q-options{display:flex;flex-direction:column;gap:8px}.q-opt{padding:12px 16px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:13px;transition:all .2s;display:flex;align-items:center;gap:10px}.q-opt:hover{border-color:#4fc3f7;background:rgba(74,144,217,.08)}
 .q-opt .q-emoji{font-size:18px;flex-shrink:0}.q-opt .q-text{flex:1}.q-opt .q-val{font-size:11px;color:var(--text3)}
 .q-result{text-align:center;padding:40px 20px}.q-result .big-score{font-size:48px;font-weight:800;color:var(--yellow)}.q-result .big-total{font-size:16px;color:var(--text3)}
 .q-dim-results{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:24px}.q-dim-item{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:12px;text-align:center}.q-dim-item .dn{font-size:12px;color:var(--text2)}.q-dim-item .ds{font-size:20px;font-weight:800}
 .review-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px}.review-section h3{font-size:14px;color:var(--text2);margin-bottom:12px}
 .review-dim{margin-bottom:16px}.review-dim:last-child{margin-bottom:0}.review-dim-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}.review-dim-head .dn{font-size:13px;font-weight:600;flex:1}.review-dim-head .ds{font-size:13px;color:var(--text3)}
-.review-input{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:8px;font-size:13px;resize:vertical;min-height:60px;outline:none}.review-input:focus{border-color:var(--blue)}
-.review-entry{padding:12px 0;border-bottom:1px solid var(--border);font-size:12px}.review-entry:last-child{border-bottom:none}.review-entry .re-date{color:var(--blue);font-weight:600}.review-entry .re-score{color:var(--yellow);font-weight:600;margin-left:8px}
-.tl-date-nav{display:flex;align-items:center;gap:12px;margin-bottom:16px}.tl-date-nav .date-display{font-size:16px;font-weight:700;color:var(--yellow)}.tl-date-nav button{background:var(--card);border:1px solid var(--border);color:var(--text2);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px}.tl-date-nav button:hover{border-color:var(--blue)}
+.review-input{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:8px;font-size:13px;resize:vertical;min-height:60px;outline:none}.review-input:focus{border-color:#4fc3f7}
+.review-entry{padding:12px 0;border-bottom:1px solid var(--border);font-size:12px}.review-entry:last-child{border-bottom:none}.review-entry .re-date{color:#4fc3f7;font-weight:600}.review-entry .re-score{color:var(--yellow);font-weight:600;margin-left:8px}
+.tl-date-nav{display:flex;align-items:center;gap:12px;margin-bottom:16px}.tl-date-nav .date-display{font-size:16px;font-weight:700;color:var(--yellow)}.tl-date-nav button{background:var(--card);border:1px solid var(--border);color:var(--text2);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px}.tl-date-nav button:hover{border-color:#4fc3f7}
 .tl-btn-sm{padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text2);font-size:11px;cursor:pointer}
 .tl-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}.tl-summary .s-box{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:12px;text-align:center}.tl-summary .s-num{font-size:20px;font-weight:800}.tl-summary .s-lbl{font-size:11px;color:var(--text3);margin-top:2px}
 .tl-form{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px}.tl-form h3{font-size:14px;color:var(--text2);margin:0 0 12px 0}
 .tl-row{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}.tl-row label{font-size:12px;color:var(--text3);min-width:50px}
-.tl-row input,.tl-row select{background:#1a1a2e;border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:6px;font-size:13px}.tl-row input:focus,.tl-row select:focus{border-color:var(--blue);outline:none}
+.tl-row input,.tl-row select{background:#1a1a2e;border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:6px;font-size:13px}.tl-row input:focus,.tl-row select:focus{border-color:#4fc3f7;outline:none}
 .tl-row input[type="time"]{width:110px}.tl-row select{width:130px}.tl-row input[type="text"]{flex:1;min-width:150px}
-.tl-btn{padding:8px 18px;border-radius:8px;border:none;background:var(--blue);color:#fff;font-size:13px;cursor:pointer}.tl-btn:hover{opacity:.85}
+.tl-btn{padding:8px 18px;border-radius:8px;border:none;background:#4fc3f7;color:#fff;font-size:13px;cursor:pointer}.tl-btn:hover{opacity:.85}
 .tl-chart{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px}.tl-chart h3{font-size:14px;color:var(--text2);margin:0 0 16px 0}
 .tl-pie-area{display:flex;align-items:center;justify-content:center;gap:30px;margin-bottom:16px;flex-wrap:wrap}.tl-pie-legend{display:flex;flex-direction:column;gap:6px}
 .tl-bar-container{display:flex;flex-direction:column;gap:8px}.tl-bar-row{display:flex;align-items:center;gap:10px;font-size:12px}.tl-bar-label{width:60px;color:var(--text3);text-align:right;flex-shrink:0}
@@ -67,7 +67,7 @@ body{background:var(--bg);background-image:radial-gradient(ellipse at 20% 50%,rg
 .tl-bar-hours{width:50px;color:var(--text3);text-align:right;font-size:11px;flex-shrink:0}
 .tl-entries{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px}.tl-entries h3{font-size:14px;color:var(--text2);margin:0 0 12px 0}
 .tl-entry{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}.tl-entry:last-child{border-bottom:none}
-.tl-entry .time{color:var(--blue);font-weight:600;min-width:110px;font-size:12px;font-family:monospace}.tl-entry .cat-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.tl-entry .time{color:#4fc3f7;font-weight:600;min-width:110px;font-size:12px;font-family:monospace}.tl-entry .cat-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .tl-entry .desc{flex:1;color:var(--text)}.tl-entry .dur{color:var(--text3);font-size:11px}.tl-entry .del-btn{color:var(--text3);cursor:pointer;font-size:16px;padding:2px 6px;border-radius:4px}.tl-entry .del-btn:hover{color:#ff6b6b;background:rgba(255,107,107,.1)}
 .tl-empty{text-align:center;color:var(--text3);font-size:13px;padding:24px 0}
 @media(max-width:768px){.total-card{flex-direction:column;text-align:center;gap:16px;padding:16px}.overview-grid,.q-dim-results{grid-template-columns:1fr}.header h1{font-size:20px}.record-stats,.tl-summary{grid-template-columns:1fr}.chat-bubble{max-width:85%}}
@@ -105,7 +105,7 @@ body{background:var(--bg);background-image:radial-gradient(ellipse at 20% 50%,rg
 <div class="panel" id="panel-timeline">
   <h2 class="section-title">每日时间轴</h2>
   <div class="tl-date-nav"><button onclick="changeDate(-1)">◀</button><div class="date-display" id="tlDateDisplay">今天</div><button onclick="changeDate(1)">▶</button><button class="tl-btn-sm" onclick="goToday()">今天</button></div>
-  <div class="tl-summary"><div class="s-box"><div class="s-num" id="tlTotal" style="color:var(--yellow)">0h</div><div class="s-lbl">已记录时长</div></div><div class="s-box"><div class="s-num" id="tlProductive" style="color:var(--green)">0h</div><div class="s-lbl">高效时段</div></div><div class="s-box"><div class="s-num" id="tlCount" style="color:var(--blue)">0</div><div class="s-lbl">记录条数</div></div></div>
+  <div class="tl-summary"><div class="s-box"><div class="s-num" id="tlTotal" style="color:var(--yellow)">0h</div><div class="s-lbl">已记录时长</div></div><div class="s-box"><div class="s-num" id="tlProductive" style="color:#66bb6a">0h</div><div class="s-lbl">高效时段</div></div><div class="s-box"><div class="s-num" id="tlCount" style="color:#4fc3f7">0</div><div class="s-lbl">记录条数</div></div></div>
   <div class="tl-form"><h3>➕ 记录时间片段</h3><div class="tl-row"><label>时段</label><input type="time" id="tlStart" value="08:00"> <span style="color:var(--text3);font-size:12px">至</span> <input type="time" id="tlEnd" value="09:00"></div><div class="tl-row"><label>分类</label><select id="tlCat"><option value="工作">工作</option><option value="学习">学习</option><option value="锻炼">锻炼</option><option value="休息">休息</option><option value="社交">社交</option><option value="娱乐">娱乐</option><option value="家务">家务</option><option value="通勤">通勤</option><option value="其他">其他</option></select></div><div class="tl-row"><label>内容</label><input type="text" id="tlDesc" placeholder="做什么"><button class="tl-btn" onclick="addTimelineEntry()">添加</button></div></div>
   <div class="tl-chart" id="tlChartArea" style="display:none"><h3>📊 时间分配</h3><div class="tl-pie-area"><div id="tlPieContainer"></div><div class="tl-pie-legend" id="tlPieLegend"></div></div><div class="tl-bar-container" id="tlBarContainer"></div></div>
   <div class="tl-entries"><h3>📋 时间流水</h3><div id="tlEntriesList"><div class="tl-empty">还没有时间记录</div></div></div>
@@ -113,7 +113,7 @@ body{background:var(--bg);background-image:radial-gradient(ellipse at 20% 50%,rg
 <div class="panel" id="panel-reminders"><h2 class="section-title">提醒中心</h2><div class="reminder-list" id="reminderList"></div><div style="margin-top:24px;padding:16px;background:var(--card);border:1px solid var(--border);border-radius:var(--r)"><p style="font-size:13px;color:var(--text2)">💡 提醒由灵犀定时任务自动触发，在对话框回复一行字即可完成记录。</p></div></div>
 <div class="panel" id="panel-records">
   <h2 class="section-title">对话记录</h2>
-  <div class="record-stats"><div class="stat-box"><div class="num" style="color:var(--orange)" id="statWork">0</div><div class="lbl">工作记录</div></div><div class="stat-box"><div class="num" style="color:var(--green)" id="statLife">0</div><div class="lbl">生活记录</div></div><div class="stat-box"><div class="num" style="color:var(--cyan)" id="statMumu">0</div><div class="lbl">沐沐记录</div></div></div>
+  <div class="record-stats"><div class="stat-box"><div class="num" style="color:#ffb74d" id="statWork">0</div><div class="lbl">工作记录</div></div><div class="stat-box"><div class="num" style="color:#66bb6a" id="statLife">0</div><div class="lbl">生活记录</div></div><div class="stat-box"><div class="num" style="color:#4dd0e1" id="statMumu">0</div><div class="lbl">沐沐记录</div></div></div>
   <div style="margin-bottom:12px"><button onclick="exportRecords()" class="btn btn-secondary" style="font-size:12px">📋 复制全部记录</button></div>
   <div class="chat-history" id="chatHistory"><div class="chat-empty" id="chatEmpty">还没有记录</div></div>
 </div>
@@ -148,43 +148,43 @@ function switchTab(el,name){var tabName=(typeof el==="string")?el:name;document.
   if(tabName==="roadmap"&&!document.getElementById("roadLocked")){loadGoals()}
   if(tabName==="deviation"){renderDeviation()}}
 var DIMS=[
-{key:"income",name:"💰 职业收入",color:"var(--orange)",
+{key:"income",name:"💰 职业收入",color:"#ffb74d",
   qs:[
     {t:"你目前每月的税后到手收入大约是多少？",o:[{l:"3000以下",s:1,e:"😞"},{l:"3000-5000",s:3,e:"😐"},{l:"5000-8000",s:6,e:"🙂"},{l:"8000-12000",s:8,e:"😊"},{l:"12000以上",s:10,e:"🚀"}]},
     {t:"你最近一次调薪或涨薪是什么时候？",o:[{l:"从未涨过",s:1,e:"❌"},{l:"3年以上前",s:3,e:"😰"},{l:"1-3年前",s:6,e:"😐"},{l:"一年内涨过",s:8,e:"👍"},{l:"最近半年有涨幅",s:10,e:"🚀"}]},
     {t:"除了本职工资，你有没有其他收入来源？",o:[{l:"完全没有",s:1,e:"❌"},{l:"有想法没行动",s:3,e:"💭"},{l:"偶尔有兼职/副业",s:6,e:"🌱"},{l:"稳定副业收入",s:8,e:"📈"},{l:"多渠道收入",s:10,e:"💰"}]}
 ]},
-{key:"health",name:"🏥 身体健康",color:"var(--red)",
+{key:"health",name:"🏥 身体健康",color:"#ef5350",
   qs:[
     {t:"你昨晚实际入睡时间是几点？过去一周平均呢？",o:[{l:"凌晨1点以后",s:1,e:"😵"},{l:"0点-1点",s:3,e:"😔"},{l:"23点-0点",s:6,e:"😐"},{l:"22点-23点",s:8,e:"🙂"},{l:"22点前",s:10,e:"💪"}]},
     {t:"你最近一次做体检是什么时候？",o:[{l:"超过2年没体检",s:1,e:"⚠️"},{l:"1-2年前",s:3,e:"🤔"},{l:"不到1年前",s:6,e:"📋"},{l:"半年内体检过",s:8,e:"✅"},{l:"定期体检+日常监测",s:10,e:"🏥"}]},
     {t:"你每周有多少天会运动30分钟以上？",o:[{l:"完全不运动",s:1,e:"🛋️"},{l:"偶尔1天",s:3,e:"🚶"},{l:"2-3天",s:6,e:"🏃"},{l:"4-5天",s:8,e:"💪"},{l:"每天运动",s:10,e:"🏆"}]}
 ]},
-{key:"mumu",name:"👨‍👦 亲子关系",color:"var(--green)",
+{key:"mumu",name:"👨‍👦 亲子关系",color:"#66bb6a",
   qs:[
     {t:"你每周有多少天陪孩子学习或阅读超过20分钟？",o:[{l:"几乎不陪",s:1,e:"😞"},{l:"1-2天",s:3,e:"😐"},{l:"3-4天",s:6,e:"👍"},{l:"5-6天",s:8,e:"📖"},{l:"每天坚持",s:10,e:"❤️"}]},
     {t:"你清楚孩子目前语数英三科的具体薄弱点吗？",o:[{l:"完全不清楚",s:1,e:"❓"},{l:"大概知道但不具体",s:3,e:"🤔"},{l:"知道薄弱点没方案",s:6,e:"📋"},{l:"有方案在执行",s:8,e:"📝"},{l:"持续跟踪调整",s:10,e:"📊"}]},
     {t:"你对孩子半年后的期望是什么？",o:[{l:"没想过",s:1,e:"❓"},{l:"希望成绩变好",s:3,e:"💭"},{l:"定了具体分数目标",s:6,e:"🎯"},{l:"制定了执行计划",s:8,e:"📋"},{l:"在执行中复盘调整",s:10,e:"🚀"}]}
 ]},
-{key:"work",name:"💼 工作状态",color:"var(--blue)",
+{key:"work",name:"💼 工作状态",color:"#4fc3f7",
   qs:[
     {t:"你本周的工作任务都能按时完成吗？",o:[{l:"大量积压",s:1,e:"😰"},{l:"经常加班赶工",s:3,e:"😓"},{l:"勉强能完成",s:6,e:"😐"},{l:"正常完成有余力",s:8,e:"👍"},{l:"高效完成+提前规划",s:10,e:"🚀"}]},
     {t:"你的工作成果能被上级看到并认可吗？",o:[{l:"做了也白做",s:1,e:"😢"},{l:"偶尔被提到",s:3,e:"😐"},{l:"定期汇报有反馈",s:6,e:"📋"},{l:"获得了发展机会",s:8,e:"📈"},{l:"有明确晋升路径",s:10,e:"🏆"}]},
     {t:"你正在推进一项能写进简历的长期项目吗？",o:[{l:"没有",s:1,e:"❌"},{l:"有想法没开始",s:3,e:"💭"},{l:"刚开始筹备",s:6,e:"🌱"},{l:"已在执行中",s:8,e:"🔨"},{l:"已有成果可展示",s:10,e:"✅"}]}
 ]},
-{key:"finance",name:"📊 家庭财务",color:"var(--cyan)",
+{key:"finance",name:"📊 家庭财务",color:"#4dd0e1",
   qs:[
     {t:"你的家庭存款能覆盖几个月的生活开支？",o:[{l:"不到1个月",s:1,e:"🚨"},{l:"1-3个月",s:3,e:"😰"},{l:"3-6个月",s:6,e:"😐"},{l:"6-12个月",s:8,e:"👍"},{l:"12个月以上",s:10,e:"💰"}]},
     {t:"你有在做定投或定期投资吗？",o:[{l:"完全没有",s:1,e:"❌"},{l:"有想法没开始",s:3,e:"💭"},{l:"偶尔买入",s:6,e:"🌱"},{l:"每月定投中",s:8,e:"📈"},{l:"多策略组合投资",s:10,e:"📊"}]},
     {t:"过去一年你的家庭总资产是增长了还是缩水了？",o:[{l:"明显缩水",s:1,e:"📉"},{l:"略有下降",s:3,e:"😰"},{l:"基本持平",s:5,e:"持平"},{l:"有所增长",s:8,e:"📈"},{l:"显著增长>10%",s:10,e:"🚀"}]}
 ]},
-{key:"mind",name:"🧠 心理状态",color:"var(--purple)",
+{key:"mind",name:"🧠 心理状态",color:"#ce93d8",
   qs:[
     {t:"过去一周有几天感到明显的焦虑、烦躁或低落？",o:[{l:"几乎每天都",s:1,e:"😞"},{l:"4-5天",s:3,e:"😔"},{l:"2-3天",s:6,e:"😐"},{l:"偶尔1天",s:8,e:"🙂"},{l:"几乎没有",s:10,e:"😌"}]},
     {t:"你有没有固定的减压方式并实际去做？",o:[{l:"没有靠硬扛",s:1,e:"🚫"},{l:"知道该做但做不到",s:3,e:"💭"},{l:"偶尔会做",s:6,e:"🌱"},{l:"每周至少2次",s:8,e:"🧘"},{l:"每天都在做",s:10,e:"💪"}]},
     {t:"你对现在的整体生活状态满意度打几分？",o:[{l:"3分以下很不满意",s:1,e:"😞"},{l:"3-5分不太满意",s:3,e:"😐"},{l:"5-7分还行",s:6,e:"🙂"},{l:"7-8分比较满意",s:8,e:"😊"},{l:"8分以上很满意",s:10,e:"🤩"}]}
 ]},
-{key:"time",name:"⏰ 时间管理",color:"var(--pink)",
+{key:"time",name:"⏰ 时间管理",color:"#f48fb1",
   qs:[
     {t:"你每天花在刷短视频/社交媒体上的时间大约多少？",o:[{l:"4小时以上",s:1,e:"📱"},{l:"2-4小时",s:3,e:"😰"},{l:"1-2小时",s:6,e:"😐"},{l:"30分钟-1小时",s:8,e:"👍"},{l:"30分钟以内",s:10,e:"💪"}]},
     {t:"你本周有为某个具体目标安排过专属时间并执行了吗？",o:[{l:"没有，全凭感觉过",s:1,e:"❌"},{l:"想了但没安排",s:3,e:"💭"},{l:"安排了但没执行",s:5,e:"📋"},{l:"执行了一部分",s:7,e:"🔨"},{l:"按计划完成了",s:10,e:"✅"}]},
@@ -475,7 +475,7 @@ function renderOverview(){
   var total=0,max=0;DIMS.forEach(function(d){total+=qScores[d.key]||0;max+=30});
   var pct=Math.round(total/max*100);
   var level=pct>=80?'优秀':pct>=60?'良好':pct>=40?'一般':'待提升';
-  var lc=pct>=80?'var(--green)':pct>=60?'var(--blue)':pct>=40?'var(--yellow)':'var(--red)';
+  var lc=pct>=80?'#66bb6a':pct>=60?'#4fc3f7':pct>=40?'var(--yellow)':'#ef5350';
   var ring=document.getElementById('scoreRing');
   if(ring){
     var circumference=2*Math.PI*42;
