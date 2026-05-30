@@ -7,15 +7,15 @@
 <title>人生驾驶舱 v5</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#f0faf0;--card:#ffffff;--card2:#f5fbf5;--border:#d4edda;--text:#1b4332;--text2:#4a7c59;--text3:#6b9b7a;--blue:#0288d1;--green:#2e7d32;--yellow:#f9a825;--orange:#ef6c00;--red:#d32f2f;--cyan:#00838f;--purple:#7b1fa2;--pink:#c2185b;--r:14px;--rs:10px}
-body{background:var(--bg);background-image:linear-gradient(180deg,#e8f5e9 0%,#f1f8e9 50%,#f0faf0 100%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.6;padding-bottom:70px}
+:root{--bg:#fff5f7;--card:#ffffff;--card2:#fff9fa;--border:#f8d7da;--text:#4a1942;--text2:#8b3a62;--text3:#b06a8f;--blue:#0288d1;--green:#c2185b;--yellow:#f9a825;--orange:#ef6c00;--red:#d32f2f;--cyan:#00838f;--purple:#7b1fa2;--pink:#e91e63;--r:14px;--rs:10px}
+body{background:var(--bg);background-image:linear-gradient(180deg,#fce4ec 0%,#fff0f3 50%,#fff5f7 100%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.6;padding-bottom:70px}
 .app{max-width:720px;margin:0 auto;padding:16px}
 .header{text-align:center;padding:24px 0 16px}
-.header h1{font-size:26px;background:linear-gradient(135deg,#2e7d32,#43a047,#66bb6a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}.header .sub{font-size:13px;color:var(--text3);margin-top:4px}
+.header h1{font-size:26px;background:linear-gradient(135deg,#c2185b,#e91e63,#f06292);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}.header .sub{font-size:13px;color:var(--text3);margin-top:4px}
 .tabs{display:flex;gap:4px;overflow-x:auto;padding:4px 0 12px;-webkit-overflow-scrolling:touch}.tabs::-webkit-scrollbar{display:none}
-.tab{padding:8px 14px;border-radius:8px;font-size:13px;cursor:pointer;white-space:nowrap;color:var(--text3);background:transparent;border:1px solid transparent;transition:all .2s}.tab.active{color:#fff;background:linear-gradient(135deg,#43a047,#66bb6a);border-color:transparent;box-shadow:0 2px 12px rgba(67,160,71,.25);color:#fff}.tab:hover:not(.active){color:var(--text2)}
+.tab{padding:8px 14px;border-radius:8px;font-size:13px;cursor:pointer;white-space:nowrap;color:var(--text3);background:transparent;border:1px solid transparent;transition:all .2s}.tab.active{color:#fff;background:linear-gradient(135deg,#e91e63,#f06292);border-color:transparent;box-shadow:0 2px 12px rgba(67,160,71,.25);color:#fff}.tab:hover:not(.active){color:var(--text2)}
 .panel{display:none;animation:fadeIn .3s ease}.panel.active{display:block}
-.section-title{font-size:16px;font-weight:700;margin-bottom:16px;padding-left:12px;border-left:3px solid #43a047}
+.section-title{font-size:16px;font-weight:700;margin-bottom:16px;padding-left:12px;border-left:3px solid #e91e63}
 .total-card{display:flex;gap:20px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;align-items:center;margin-bottom:16px;box-shadow:0 4px 20px rgba(67,160,71,.1)}
 .score-ring{position:relative;width:100px;height:100px;flex-shrink:0}.score-ring svg{transform:rotate(-90deg)}.ring-bg{fill:none;stroke:#c8e6c9;stroke-width:8}.ring-fg{fill:none;stroke:var(--border);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .8s;filter:drop-shadow(0 0 8px rgba(96,165,250,.4))}
 .score-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column}.score-center .n{font-size:28px;font-weight:800}.score-center .l{font-size:11px;color:var(--text3)}
@@ -34,7 +34,7 @@ body{background:var(--bg);background-image:linear-gradient(180deg,#e8f5e9 0%,#f1
 .reminder-item{display:flex;align-items:center;gap:12px;padding:14px;background:var(--card);border:1px solid var(--border);border-radius:var(--rs)}.rem-icon{font-size:20px;flex-shrink:0}.rem-info{flex:1}.rem-name{font-size:13px;font-weight:600}.rem-detail{font-size:11px;color:var(--text2)}.rem-countdown{font-size:11px;color:var(--blue);font-weight:600;white-space:nowrap}
 .record-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}.stat-box{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:14px;text-align:center}.stat-box .num{font-size:24px;font-weight:800}.stat-box .lbl{font-size:11px;color:var(--text3);margin-top:2px}
 .chat-history{max-height:400px;overflow-y:auto;padding:4px 0}.chat-empty{text-align:center;color:var(--text3);font-size:13px;padding:24px 0}
-.chat-bubble{max-width:80%;padding:10px 14px;border-radius:12px;margin-bottom:8px;font-size:13px;line-height:1.5}.chat-bubble.user{margin-left:auto;background:linear-gradient(135deg,#43a047,#66bb6a);color:#fff;border-bottom-right-radius:4px}.chat-bubble.ai{margin-right:auto;background:var(--card);border:1px solid rgba(67,160,71,.2);border-bottom-left-radius:4px}
+.chat-bubble{max-width:80%;padding:10px 14px;border-radius:12px;margin-bottom:8px;font-size:13px;line-height:1.5}.chat-bubble.user{margin-left:auto;background:linear-gradient(135deg,#e91e63,#f06292);color:#fff;border-bottom-right-radius:4px}.chat-bubble.ai{margin-right:auto;background:var(--card);border:1px solid rgba(67,160,71,.2);border-bottom-left-radius:4px}
 .chat-bar{position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:1px solid var(--border);padding:12px 16px;z-index:100}.chat-bar-inner{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:8px}
 .route-indicator{font-size:11px;color:var(--text3);white-space:nowrap;min-width:80px}
 .chat-bar input{flex:1;background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:10px;font-size:13px;outline:none}.chat-bar input:focus{border-color:var(--blue)}
@@ -105,7 +105,7 @@ body{background:var(--bg);background-image:linear-gradient(180deg,#e8f5e9 0%,#f1
 <div class="panel" id="panel-timeline">
   <h2 class="section-title">每日时间轴</h2>
   <div class="tl-date-nav"><button onclick="changeDate(-1)">◀</button><div class="date-display" id="tlDateDisplay">今天</div><button onclick="changeDate(1)">▶</button><button class="tl-btn-sm" onclick="goToday()">今天</button></div>
-  <div class="tl-summary"><div class="s-box"><div class="s-num" id="tlTotal" style="color:var(--yellow)">0h</div><div class="s-lbl">已记录时长</div></div><div class="s-box"><div class="s-num" id="tlProductive" style="color:#66bb6a">0h</div><div class="s-lbl">高效时段</div></div><div class="s-box"><div class="s-num" id="tlCount" style="color:#4fc3f7">0</div><div class="s-lbl">记录条数</div></div></div>
+  <div class="tl-summary"><div class="s-box"><div class="s-num" id="tlTotal" style="color:var(--yellow)">0h</div><div class="s-lbl">已记录时长</div></div><div class="s-box"><div class="s-num" id="tlProductive" style="color:#f06292">0h</div><div class="s-lbl">高效时段</div></div><div class="s-box"><div class="s-num" id="tlCount" style="color:#4fc3f7">0</div><div class="s-lbl">记录条数</div></div></div>
   <div class="tl-form"><h3>➕ 记录时间片段</h3><div class="tl-row"><label>时段</label><input type="time" id="tlStart" value="08:00"> <span style="color:var(--text3);font-size:12px">至</span> <input type="time" id="tlEnd" value="09:00"></div><div class="tl-row"><label>分类</label><select id="tlCat"><option value="工作">工作</option><option value="学习">学习</option><option value="锻炼">锻炼</option><option value="休息">休息</option><option value="社交">社交</option><option value="娱乐">娱乐</option><option value="家务">家务</option><option value="通勤">通勤</option><option value="其他">其他</option></select></div><div class="tl-row"><label>内容</label><input type="text" id="tlDesc" placeholder="做什么"><button class="tl-btn" onclick="addTimelineEntry()">添加</button></div></div>
   <div class="tl-chart" id="tlChartArea" style="display:none"><h3>📊 时间分配</h3><div class="tl-pie-area"><div id="tlPieContainer"></div><div class="tl-pie-legend" id="tlPieLegend"></div></div><div class="tl-bar-container" id="tlBarContainer"></div></div>
   <div class="tl-entries"><h3>📋 时间流水</h3><div id="tlEntriesList"><div class="tl-empty">还没有时间记录</div></div></div>
@@ -113,7 +113,7 @@ body{background:var(--bg);background-image:linear-gradient(180deg,#e8f5e9 0%,#f1
 <div class="panel" id="panel-reminders"><h2 class="section-title">提醒中心</h2><div class="reminder-list" id="reminderList"></div><div style="margin-top:24px;padding:16px;background:var(--card);border:1px solid var(--border);border-radius:var(--r)"><p style="font-size:13px;color:var(--text2)">💡 提醒由灵犀定时任务自动触发，在对话框回复一行字即可完成记录。</p></div></div>
 <div class="panel" id="panel-records">
   <h2 class="section-title">对话记录</h2>
-  <div class="record-stats"><div class="stat-box"><div class="num" style="color:#ffb74d" id="statWork">0</div><div class="lbl">工作记录</div></div><div class="stat-box"><div class="num" style="color:#66bb6a" id="statLife">0</div><div class="lbl">生活记录</div></div><div class="stat-box"><div class="num" style="color:#4dd0e1" id="statMumu">0</div><div class="lbl">亲子记录</div></div></div>
+  <div class="record-stats"><div class="stat-box"><div class="num" style="color:#ffb74d" id="statWork">0</div><div class="lbl">工作记录</div></div><div class="stat-box"><div class="num" style="color:#f06292" id="statLife">0</div><div class="lbl">生活记录</div></div><div class="stat-box"><div class="num" style="color:#4dd0e1" id="statMumu">0</div><div class="lbl">亲子记录</div></div></div>
   <div style="margin-bottom:12px"><button onclick="exportRecords()" class="btn btn-secondary" style="font-size:12px">📋 复制全部记录</button></div>
   <div class="chat-history" id="chatHistory"><div class="chat-empty" id="chatEmpty">还没有记录</div></div>
 </div>
@@ -160,7 +160,7 @@ var DIMS=[
     {t:"你最近一次做体检是什么时候？",o:[{l:"超过2年没体检",s:1,e:"⚠️"},{l:"1-2年前",s:3,e:"🤔"},{l:"不到1年前",s:6,e:"📋"},{l:"半年内体检过",s:8,e:"✅"},{l:"定期体检+日常监测",s:10,e:"🏥"}]},
     {t:"你每周有多少天会运动30分钟以上？",o:[{l:"完全不运动",s:1,e:"🛋️"},{l:"偶尔1天",s:3,e:"🚶"},{l:"2-3天",s:6,e:"🏃"},{l:"4-5天",s:8,e:"💪"},{l:"每天运动",s:10,e:"🏆"}]}
 ]},
-{key:"mumu",name:"👨‍👦 亲子关系",color:"#66bb6a",
+{key:"mumu",name:"👨‍👦 亲子关系",color:"#f06292",
   qs:[
     {t:"你每周有多少天陪孩子学习或阅读超过20分钟？",o:[{l:"几乎不陪",s:1,e:"😞"},{l:"1-2天",s:3,e:"😐"},{l:"3-4天",s:6,e:"👍"},{l:"5-6天",s:8,e:"📖"},{l:"每天坚持",s:10,e:"❤️"}]},
     {t:"你清楚孩子目前语数英三科的具体薄弱点吗？",o:[{l:"完全不清楚",s:1,e:"❓"},{l:"大概知道但不具体",s:3,e:"🤔"},{l:"知道薄弱点没方案",s:6,e:"📋"},{l:"有方案在执行",s:8,e:"📝"},{l:"持续跟踪调整",s:10,e:"📊"}]},
@@ -262,7 +262,7 @@ function renderQResult(){
       +'<div style="height:100%;width:'+p+'%;background:'+d.color+';border-radius:4px;transition:width .5s"></div></div></div>';
   });
   html+='</div><div style="text-align:center;margin-top:20px">'
-    +'<button onclick="qStep=0;qScores={};qAnswers={};localStorage.removeItem(STEP_KEY);localStorage.removeItem(ANS_KEY);localStorage.removeItem(Q_KEY);renderQuestionnaire()" style="padding:10px 24px;border:none;border-radius:8px;background:#4CAF50;color:#fff;font-size:14px;cursor:pointer">重新测评</button></div>';
+    +'<button onclick="qStep=0;qScores={};qAnswers={};localStorage.removeItem(STEP_KEY);localStorage.removeItem(ANS_KEY);localStorage.removeItem(Q_KEY);renderQuestionnaire()" style="padding:10px 24px;border:none;border-radius:8px;background:#e91e63;color:#fff;font-size:14px;cursor:pointer">重新测评</button></div>';
   box.innerHTML=html;
   updateOverview();
   unlockRoadmap();
@@ -307,7 +307,7 @@ function unlockRoadmap(){
     // 高分维度也简要提示
     var goodDims=DIMS.filter(function(d){return Math.round((qScores[d.key]||0)/30*100)>=70});
     if(goodDims.length>0){
-      h+='<div style="margin-top:16px;padding:12px;background:#f0f9f0;border-radius:8px;font-size:13px;color:#2e7d32">'
+      h+='<div style="margin-top:16px;padding:12px;background:#fff0f3;border-radius:8px;font-size:13px;color:#c2185b">'
         +'<strong>✅ 表现优秀：</strong>'+goodDims.map(function(d){return d.name+'('+Math.round((qScores[d.key]||0)/30*100)+'%)'}).join('、')
         +'<br>这是你的优势领域，思考如何进一步放大</div>';
     }
@@ -325,7 +325,7 @@ function unlockRoadmap(){
     +'<option value="">选择维度</option>'
     +DIMS.map(function(d){return'<option value="'+d.key+'">'+d.name+'</option>'}).join('')
     +'</select>'
-    +'<button onclick="addGoal()" style="padding:10px 20px;border:none;border-radius:8px;background:#4CAF50;color:#fff;font-size:13px;cursor:pointer;white-space:nowrap">添加</button>'
+    +'<button onclick="addGoal()" style="padding:10px 20px;border:none;border-radius:8px;background:#e91e63;color:#fff;font-size:13px;cursor:pointer;white-space:nowrap">添加</button>'
     +'</div></div>'
     +'<div id="goalList"></div></div></div>';
 
@@ -475,7 +475,7 @@ function renderOverview(){
   var total=0,max=0;DIMS.forEach(function(d){total+=qScores[d.key]||0;max+=30});
   var pct=Math.round(total/max*100);
   var level=pct>=80?'优秀':pct>=60?'良好':pct>=40?'一般':'待提升';
-  var lc=pct>=80?'#66bb6a':pct>=60?'#4fc3f7':pct>=40?'var(--yellow)':'#ef5350';
+  var lc=pct>=80?'#f06292':pct>=60?'#4fc3f7':pct>=40?'var(--yellow)':'#ef5350';
   var ring=document.getElementById('scoreRing');
   if(ring){
     var circumference=2*Math.PI*42;
@@ -535,7 +535,7 @@ function renderReminders(){
       +'<div style="flex:1"><div style="font-weight:600;font-size:14px;color:#333">'+r.title+'</div>'
       +(r.desc?'<div style="font-size:12px;color:#888;margin-top:2px">'+r.desc+'</div>':'')
       +'</div>'
-      +'<span style="font-size:12px;color:#4CAF50;font-weight:600;background:#e8f5e9;padding:4px 10px;border-radius:20px">'+next+'</span>'
+      +'<span style="font-size:12px;color:#e91e63;font-weight:600;background:#fce4ec;padding:4px 10px;border-radius:20px">'+next+'</span>'
       +'<button onclick="removeReminder('+i+')" style="background:none;border:none;color:#ccc;font-size:18px;cursor:pointer;padding:2px 6px">×</button>'
       +'</div>';
   });
@@ -555,7 +555,7 @@ function renderReminders(){
     +cats.map(function(c){return'<option value="'+c+'">'+c+'</option>'}).join('')
     +'</select>'
     +'</div>'
-    +'<button onclick="addReminder()" style="padding:8px 20px;border:none;border-radius:8px;background:#4CAF50;color:#fff;font-size:13px;cursor:pointer">添加</button>'
+    +'<button onclick="addReminder()" style="padding:8px 20px;border:none;border-radius:8px;background:#e91e63;color:#fff;font-size:13px;cursor:pointer">添加</button>'
     +'</div>';
   box.innerHTML=h;
 }
@@ -603,7 +603,7 @@ function renderMessage(text,from){
   var bubble=document.createElement('div');
   bubble.textContent=text;
   bubble.style.cssText='max-width:80%;padding:10px 14px;border-radius:12px;font-size:14px;line-height:1.5;'
-    +(from==='user'?'background:#4CAF50;color:#fff;border-bottom-right-radius:4px'
+    +(from==='user'?'background:#e91e63;color:#fff;border-bottom-right-radius:4px'
     :'background:#f0f0f0;color:#333;border-bottom-left-radius:4px');
   div.appendChild(bubble);
   box.appendChild(div);
@@ -799,7 +799,7 @@ function renderReview(){
 
   if(existing){
     html+='<div style="background:#f0f7f0;border:1px solid #c8e6c9;border-radius:10px;padding:16px;margin-bottom:16px">'
-      +'<div style="font-size:13px;color:#4CAF50;font-weight:600;margin-bottom:8px">✓ 已提交复盘</div>'
+      +'<div style="font-size:13px;color:#e91e63;font-weight:600;margin-bottom:8px">✓ 已提交复盘</div>'
       +'<div style="font-size:14px;color:#333;line-height:1.8;white-space:pre-wrap">'+existing.content+'</div></div>';
   }
 
@@ -810,7 +810,7 @@ function renderReview(){
     +'<textarea id="rv-improve" rows="3" placeholder="本月做得不够好的..." style="width:100%;padding:10px;border:1px solid #e0e0e0;border-radius:8px;font-size:14px;resize:vertical;font-family:inherit;box-sizing:border-box">'+(existing&&existing.improve?existing.improve:'')+'</textarea></div>'
     +'<div><label style="font-size:13px;color:#555;font-weight:600;display:block;margin-bottom:6px">下月核心目标（限3个）</label>'
     +'<textarea id="rv-goals" rows="3" placeholder="每行一个目标..." style="width:100%;padding:10px;border:1px solid #e0e0e0;border-radius:8px;font-size:14px;resize:vertical;font-family:inherit;box-sizing:border-box">'+(existing&&existing.goals?existing.goals:'')+'</textarea></div>'
-    +'<button onclick="saveReview()" style="align-self:flex-end;padding:10px 28px;border:none;border-radius:8px;background:#4CAF50;color:#fff;font-size:14px;font-weight:600;cursor:pointer">保存复盘</button></div>';
+    +'<button onclick="saveReview()" style="align-self:flex-end;padding:10px 28px;border:none;border-radius:8px;background:#e91e63;color:#fff;font-size:14px;font-weight:600;cursor:pointer">保存复盘</button></div>';
 
   box.innerHTML=html;
 
@@ -982,7 +982,7 @@ function renderDeviation(){
   });
 
   // 7. 渲染
-  var styles={red:{bg:'#fce4ec',border:'#e53935',icon:'🔴',label:'严重偏航'},yellow:{bg:'#fff8e1',border:'#f9a825',icon:'🟡',label:'轻度偏航'},green:{bg:'#e8f5e9',border:'#43a047',icon:'🟢',label:'航向正确'}};
+  var styles={red:{bg:'#fce4ec',border:'#e53935',icon:'🔴',label:'严重偏航'},yellow:{bg:'#fff8e1',border:'#f9a825',icon:'🟡',label:'轻度偏航'},green:{bg:'#fce4ec',border:'#e91e63',icon:'🟢',label:'航向正确'}};
 
   var totalScore=Math.round(((qScores.income||0)+(qScores.health||0)+(qScores.mumu||0)+(qScores.work||0)+(qScores.finance||0)+(qScores.mind||0)+(qScores.time||0))/210*100);
   var overallStatus=totalScore>=70?'green':totalScore>=45?'yellow':'red';
