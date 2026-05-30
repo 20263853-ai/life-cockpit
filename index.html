@@ -192,8 +192,10 @@ var DIMS=[
 ]}
 ];;
 var qStep=0,qScores={},qAnswers={};
-var Q_KEY="cockpit_q_scores",REVIEW_KEY="cockpit_reviews";
+var Q_KEY="cockpit_q_scores",REVIEW_KEY="cockpit_reviews",STEP_KEY="cockpit_q_step",ANS_KEY="cockpit_q_answers";
 function getQScores(){try{return JSON.parse(localStorage.getItem(Q_KEY))||{}}catch(e){return{}}}
+function getQStep(){try{return parseInt(localStorage.getItem(STEP_KEY))||0}catch(e){return 0}}
+function getQAnswers(){try{return JSON.parse(localStorage.getItem(ANS_KEY))||{}}catch(e){return{}}}
 function saveQScores(s){localStorage.setItem(Q_KEY,JSON.stringify(s))}
 function getReviews(){try{return JSON.parse(localStorage.getItem(REVIEW_KEY))||[]}catch(e){return[]}}
 function saveReviews(r){localStorage.setItem(REVIEW_KEY,JSON.stringify(r))}
@@ -223,7 +225,7 @@ function answerQ(key,score){
   if(!qAnswers[key])qAnswers[key]=[];
   qAnswers[key].push(score);
   qScores[key]=(qAnswers[key].reduce(function(a,b){return a+b},0));
-  saveQScores(qScores);
+  saveQScores(qScores);localStorage.setItem(STEP_KEY,qStep+1);localStorage.setItem(ANS_KEY,JSON.stringify(qAnswers));
   qStep++;renderQuestionnaire();
 }
 function renderQResult(){
@@ -247,7 +249,7 @@ function renderQResult(){
       +'<div style="height:100%;width:'+p+'%;background:'+d.color+';border-radius:4px;transition:width .5s"></div></div></div>';
   });
   html+='</div><div style="text-align:center;margin-top:20px">'
-    +'<button onclick="qStep=0;qScores={};qAnswers={};renderQuestionnaire()" style="padding:10px 24px;border:none;border-radius:8px;background:#4CAF50;color:#fff;font-size:14px;cursor:pointer">重新测评</button></div>';
+    +'<button onclick="qStep=0;qScores={};qAnswers={};localStorage.removeItem(STEP_KEY);localStorage.removeItem(ANS_KEY);localStorage.removeItem(Q_KEY);renderQuestionnaire()" style="padding:10px 24px;border:none;border-radius:8px;background:#4CAF50;color:#fff;font-size:14px;cursor:pointer">重新测评</button></div>';
   box.innerHTML=html;
   updateOverview();
   unlockRoadmap();
@@ -541,8 +543,7 @@ function sendMessage(){
   renderMessage(msg,'user');
   setTimeout(function(){
   // 版本控制 - 升级后自动清除旧数据
-  var COCKPIT_VERSION="v6-20260530";
-  try{var cv=localStorage.getItem("cockpit_version");if(cv!==COCKPIT_VERSION){localStorage.removeItem("cockpit_q_scores");localStorage.removeItem("cockpit_reviews");localStorage.removeItem("cockpit_road_goals")}localStorage.setItem("cockpit_version",COCKPIT_VERSION)}catch(e){}
+  // 数据保留：不清除用户已保存的测评和目标
 
     var reply="已记录: "+msg;
     chatRecords.push({text:reply,time:new Date().toLocaleString('zh-CN'),from:'ai'});
@@ -797,7 +798,7 @@ function saveReview(){
 /* ===== 偏航检测 ===== */
 function renderDeviation(){
   var box=document.getElementById('devContent');if(!box)return;
-  if(qStep<DIMS.length){
+  var hasData=Object.keys(qScores).length>0;if(!hasData){
     box.innerHTML='<div style="text-align:center;padding:60px 20px;color:#999"><div style="font-size:48px;margin-bottom:16px">🧭</div><div style="font-size:16px;margin-bottom:8px">完成七维测评后启用</div><div style="font-size:13px">偏航检测需要测评数据作为航向基准</div></div>';
     return;
   }
@@ -937,7 +938,7 @@ function renderDeviation(){
   // 7. 渲染
   var styles={red:{bg:'#fce4ec',border:'#e53935',icon:'🔴',label:'严重偏航'},yellow:{bg:'#fff8e1',border:'#f9a825',icon:'🟡',label:'轻度偏航'},green:{bg:'#e8f5e9',border:'#43a047',icon:'🟢',label:'航向正确'}};
 
-  var totalScore=Math.round((qScores.income||0+(qScores.health||0)+(qScores.mumu||0)+(qScores.work||0)+(qScores.finance||0)+(qScores.mind||0)+(qScores.time||0))/210*100);
+  var totalScore=Math.round(((qScores.income||0)+(qScores.health||0)+(qScores.mumu||0)+(qScores.work||0)+(qScores.finance||0)+(qScores.mind||0)+(qScores.time||0))/210*100);
   var overallStatus=totalScore>=70?'green':totalScore>=45?'yellow':'red';
 
   var h='<div style="margin-bottom:20px;padding:16px;border-radius:12px;background:'+styles[overallStatus].bg+';border-left:4px solid '+styles[overallStatus].border+'">'
@@ -986,7 +987,7 @@ function renderDeviation(){
 
 /* ===== 初始化 ===== */
 (function(){
-  qScores=getQScores();
+  qScores=getQScores();qStep=getQStep();qAnswers=getQAnswers();
   loadRecords();
   if(qStep>=DIMS.length){renderQResult();renderOverview()}else{renderQuestionnaire()}
   renderOverview();
