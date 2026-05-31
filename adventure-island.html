@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>我的冒险岛</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#fff5f7;--card:#ffffff;--card2:#fff0f3;--accent:#e91e63;--yellow:#f9a825;
+  --green:#4caf50;--blue:#0288d1;--purple:#9c27b0;--text:#4a1942;--text2:#8b3a62;
+  --text3:#b06a8f;--radius:16px;--shadow:0 4px 20px rgba(233,30,99,.08);
+}
+body{font-family:'Noto Sans SC',system-ui,sans-serif;background:var(--bg);color:var(--text);
+  min-height:100vh;overflow-x:hidden;padding-bottom:20px;touch-action:manipulation}
+.app{max-width:420px;margin:0 auto;padding:12px}
+.header{text-align:center;padding:16px 0 8px}
+.header h1{font-size:22px;background:linear-gradient(135deg,#e91e63,#f06292,#ff80ab);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header .sub{font-size:12px;color:var(--text2);margin-top:4px}
+.pet-scene{background:var(--card);border-radius:var(--radius);padding:16px;
+  min-height:380px;position:relative;box-shadow:var(--shadow);overflow:visible;
+  border:1px solid rgba(233,30,99,.06)}
+.pet-ground{position:absolute;bottom:0;left:0;right:0;height:100px;
+  background:linear-gradient(transparent,rgba(233,30,99,.05));border-radius:0 0 var(--radius) var(--radius);
+  pointer-events:none;z-index:1}
+.pet-display{text-align:center;padding:16px 0 10px;position:relative;z-index:2}
+.pet-avatar{width:96px;height:96px;border-radius:50%;border:4px solid var(--accent);
+  box-shadow:0 0 24px rgba(233,30,99,.2);transition:.3s;
+  background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:48px;margin:0 auto}
+.pet-name{font-size:18px;font-weight:bold;margin-top:8px;color:var(--text)}
+.pet-level{font-size:13px;color:var(--accent);margin-top:2px}
+.pet-status{display:flex;justify-content:center;gap:16px;margin-top:10px;flex-wrap:wrap}
+.ps-item{font-size:12px;color:var(--text2)}.ps-val{color:var(--accent);font-weight:bold}
+.pet-bubbles{min-height:28px;margin-top:8px;font-size:14px;animation:bubbleIn .4s;color:var(--text)}
+@keyframes bubbleIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.stats-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.stat-card{background:var(--card);border-radius:12px;padding:10px;text-align:center;
+  box-shadow:var(--shadow);border:1px solid rgba(233,30,99,.06)}
+.stat-val{font-size:20px;font-weight:bold;color:var(--accent)}
+.stat-label{font-size:11px;color:var(--text2);margin-top:2px}
+.inventory{background:var(--card);border-radius:var(--radius);padding:12px;margin:12px 0;
+  box-shadow:var(--shadow);border:1px solid rgba(233,30,99,.06)}
+.inv-title{font-size:14px;color:var(--text2);margin-bottom:8px}
+.inv-grid{display:flex;flex-wrap:wrap;gap:8px}
+.inv-item{width:56px;height:56px;background:var(--card2);border-radius:12px;display:flex;
+  align-items:center;justify-content:center;font-size:28px;cursor:pointer;transition:.2s;
+  touch-action:manipulation;position:relative;border:2px solid rgba(233,30,99,.1)}
+.inv-item:hover{transform:scale(1.1);box-shadow:0 0 12px rgba(233,30,99,.15)}
+.inv-item::after{content:attr(data-name);position:absolute;bottom:-16px;font-size:9px;
+  color:var(--text2);white-space:nowrap}
+.inv-empty{width:56px;height:56px;background:rgba(233,30,99,.03);border-radius:12px;
+  border:1px dashed rgba(233,30,99,.15)}
+.tab-nav{display:flex;gap:4px;margin:12px 0;background:var(--card);border-radius:var(--radius);
+  padding:4px;box-shadow:var(--shadow);border:1px solid rgba(233,30,99,.06)}
+.tab-btn{flex:1;padding:10px 0;border:none;background:transparent;color:var(--text2);
+  font-size:13px;border-radius:12px;cursor:pointer;transition:.2s}
+.tab-btn.active{background:linear-gradient(135deg,#e91e63,#f06292);color:#fff;font-weight:bold}
+.tab-panel{display:none;background:var(--card);border-radius:var(--radius);padding:16px;
+  box-shadow:var(--shadow);min-height:200px;border:1px solid rgba(233,30,99,.06)}
+.tab-panel.active{display:block}
+.map-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.map-card{background:var(--card2);border-radius:14px;padding:14px 8px;text-align:center;
+  cursor:pointer;transition:.3s;border:2px solid rgba(233,30,99,.08)}
+.map-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(233,30,99,.12)}
+.map-card.locked{opacity:.35;pointer-events:none}
+.map-card.current{border-color:var(--accent)}
+.map-emoji{font-size:32px;margin-bottom:4px}
+.map-name{font-size:12px;font-weight:bold}
+.map-lv{font-size:10px;color:var(--text3)}
+.battle-title{font-size:18px;font-weight:bold;text-align:center;margin-bottom:12px}
+.battle-arena{display:flex;justify-content:center;align-items:center;gap:16px;margin:16px 0}
+.battle-fighter{text-align:center;min-width:100px}
+.battle-emoji{font-size:48px;margin-bottom:6px}
+.battle-name{font-size:14px;font-weight:bold}
+.battle-hp-bar{width:100%;height:10px;background:rgba(233,30,99,.08);border-radius:5px;
+  overflow:hidden;margin-top:6px}
+.battle-hp-fill{height:100%;background:linear-gradient(90deg,#e91e63,#f06292);
+  border-radius:5px;transition:.5s}
+.battle-hp-fill.low{background:linear-gradient(90deg,#ff5722,#ff9800)}
+.battle-hp-text{font-size:11px;color:var(--text2);margin-top:2px}
+.battle-vs{font-size:24px;font-weight:bold;color:var(--accent)}
+.battle-result{text-align:center;font-size:16px;font-weight:bold;margin:12px 0}
+.battle-reward{text-align:center;font-size:14px;color:var(--yellow)}
+.battle-status{text-align:center;font-size:14px;color:var(--text2);margin:10px 0;min-height:20px}
+.battle-btn{display:block;width:100%;padding:14px;border:none;border-radius:12px;
+  background:linear-gradient(135deg,#e91e63,#f06292);color:#fff;font-size:16px;
+  font-weight:bold;cursor:pointer;margin-top:12px}
+.battle-log{margin-top:12px;max-height:120px;overflow-y:auto;font-size:12px;color:var(--text2);
+  background:var(--card2);border-radius:10px;padding:8px}
+.battle-log div{padding:4px 0;border-bottom:1px solid rgba(233,30,99,.06)}
+.task-list{display:flex;flex-direction:column;gap:8px}
+.task-item{background:var(--card2);border-radius:12px;padding:12px;display:flex;
+  align-items:center;gap:10px;cursor:pointer;transition:.2s;border:2px solid rgba(233,30,99,.06)}
+.task-item:hover{background:#ffe4ec}
+.task-item.done{border-color:var(--accent);background:#fce4ec}
+.task-emoji{font-size:24px}
+.task-info{flex:1}
+.task-name{font-size:13px;font-weight:bold}
+.task-reward{font-size:11px;color:var(--accent)}
+.task-check{width:24px;height:24px;border-radius:50%;border:2px solid var(--text3);
+  display:flex;align-items:center;justify-content:center;font-size:14px;transition:.2s}
+.task-item.done .task-check{background:var(--accent);border-color:var(--accent);color:#fff}
+.best-section{margin-top:16px}
+.best-title{font-size:14px;color:var(--text2);margin-bottom:8px}
+.best-input-row{display:flex;gap:8px;margin-bottom:10px}
+.best-input{flex:1;padding:10px 14px;border:2px solid rgba(233,30,99,.1);border-radius:12px;
+  background:var(--card2);color:var(--text);font-size:14px;outline:none}
+.best-input:focus{border-color:var(--accent)}
+.best-add-btn{padding:10px 16px;border:none;border-radius:12px;background:var(--accent);
+  color:#fff;font-size:14px;cursor:pointer;font-weight:bold;white-space:nowrap}
+.best-records{display:flex;flex-direction:column;gap:6px}
+.best-record{background:var(--card2);border-radius:10px;padding:10px 14px;font-size:13px;
+  display:flex;align-items:center;gap:8px}
+.best-record .br-icon{font-size:16px}
+.goal-list{display:flex;flex-direction:column;gap:8px}
+.goal-card{background:var(--card2);border-radius:12px;padding:12px}
+.goal-title{font-size:13px;font-weight:bold;margin-bottom:6px}
+.goal-bar{width:100%;height:8px;background:rgba(233,30,99,.06);border-radius:4px;overflow:hidden}
+.goal-fill{height:100%;background:linear-gradient(90deg,#e91e63,#f06292);
+  border-radius:4px;transition:.5s}
+.goal-info{display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-top:4px}
+.custom-goal-section{margin-top:16px;padding-top:12px;border-top:1px solid rgba(233,30,99,.1)}
+.custom-goal-title{font-size:14px;color:var(--text2);margin-bottom:8px}
+.custom-goal-input-row{display:flex;gap:8px;margin-bottom:10px}
+.custom-goal-input{flex:1;padding:10px 14px;border:2px solid rgba(233,30,99,.1);border-radius:12px;
+  background:var(--card2);color:var(--text);font-size:14px;outline:none}
+.custom-goal-input:focus{border-color:var(--accent)}
+.custom-goal-add-btn{padding:10px 16px;border:none;border-radius:12px;background:var(--purple);
+  color:#fff;font-size:14px;cursor:pointer;font-weight:bold;white-space:nowrap}
+.custom-goal-item{display:flex;align-items:center;gap:8px;background:var(--card2);
+  border-radius:10px;padding:8px 12px;font-size:13px;margin-bottom:6px}
+.custom-goal-done{opacity:.6;text-decoration:line-through}
+.custom-goal-text{flex:1}
+.custom-goal-del{width:24px;height:24px;border-radius:50%;border:none;background:rgba(233,30,99,.08);
+  color:var(--text2);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center}
+.badge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.badge{background:var(--card2);border-radius:14px;padding:14px 8px;text-align:center;transition:.2s;
+  border:1px solid rgba(233,30,99,.06)}
+.badge.locked{opacity:.3;filter:grayscale(1)}
+.badge span:first-child{font-size:28px;display:block;margin-bottom:4px}
+.badge-name{font-size:10px;color:var(--text2)}
+.egg-box{margin-top:12px;display:flex;gap:8px}
+.map-detail-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);
+  z-index:100;display:flex;align-items:flex-end;justify-content:center}
+.map-detail-panel{background:var(--card);border-radius:20px 20px 0 0;padding:24px 16px 32px;
+  width:100%;max-width:420px;max-height:80vh;overflow-y:auto;animation:slideUp .3s}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
+.map-detail-close{position:absolute;top:12px;right:16px;background:none;border:none;
+  color:var(--text2);font-size:20px;cursor:pointer}
+.monster-list{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.monster-card{background:var(--card2);border-radius:14px;padding:14px;display:flex;
+  align-items:center;gap:12px;cursor:pointer;transition:.2s;border:2px solid rgba(233,30,99,.06)}
+.monster-card:hover{border-color:var(--accent);transform:scale(1.02)}
+.monster-emoji{font-size:36px}
+.monster-info{flex:1}
+.monster-name{font-size:14px;font-weight:bold}
+.monster-desc{font-size:11px;color:var(--text2);margin-top:2px}
+.monster-power{font-size:11px;color:var(--accent)}
+.battle-start-btn{width:100%;padding:14px;border:none;border-radius:14px;
+  background:linear-gradient(135deg,#e91e63,#ff80ab);color:#fff;font-size:16px;
+  font-weight:bold;cursor:pointer;margin-top:16px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(233,30,99,.3)}50%{box-shadow:0 0 0 10px rgba(233,30,99,0)}}
+.battle-stats{display:flex;gap:12px;justify-content:center;margin-top:10px;font-size:12px;color:var(--text2)}
+.battle-stats span{padding:4px 10px;background:var(--card2);border-radius:8px}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<script>
+var AVATARS=[
+  {id:"cat_pink",name:"樱花猫",emoji:"🐱"},
+  {id:"cat_cool",name:"酷酷猫",emoji:"😺"},
+  {id:"rabbit",name:"萌萌兔",emoji:"🐰"},
+  {id:"bear",name:"小棕熊",emoji:"🐻"},
+  {id:"fox",name:"小红狐",emoji:"🦊"},
+  {id:"panda",name:"熊猫仔",emoji:"🐼"},
+  {id:"deer",name:"小鹿斑比",emoji:"🦌"},
+  {id:"unicorn",name:"独角兽",emoji:"🦄"},
+  {id:"flamingo",name:"火烈鸟",emoji:"🦩"},
+  {id:"swan",name:"白天鹅",emoji:"🦢"},
+  {id:"butterfly",name:"蝶舞",emoji:"🦋"},
+  {id:"dolphin",name:"小海豚",emoji:"🐬"}
+];
+
+var PETS=[
+  {id:"phoenix",name:"小凤凰",emoji:"🔥",type:"fire",desc:"浴火重生，越挫越勇"},
+  {id:"dragon",name:"青云龙",emoji:"🐉",type:"water",desc:"腾云驾雾，志在千里"},
+  {id:"deer_fairy",name:"灵鹿仙子",emoji:"✨",type:"star",desc:"优雅从容，温柔坚定"},
+  {id:"wolf",name:"银月狼",emoji:"🐺",type:"ice",desc:"独立坚强，不惧风雨"}
+];
+
+var FOODS=[
+  {id:"coffee",name:"咖啡",emoji:"☕",hunger:12,mood:10,xp:2},
+  {id:"book",name:"好书",emoji:"📚",hunger:8,mood:20,xp:4},
+  {id:"flower",name:"鲜花",emoji:"💐",hunger:5,mood:25,xp:2},
+  {id:"cake",name:"蛋糕",emoji:"🍰",hunger:30,mood:15,xp:3},
+  {id:"tea",name:"好茶",emoji:"🍵",hunger:10,mood:12,xp:3},
+  {id:"salad",name:"沙拉",emoji:"🥗",hunger:25,mood:8,xp:4},
+  {id:"wine",name:"红酒",emoji:"🍷",hunger:15,mood:18,xp:2},
+  {id:"chicken",name:"鸡汤",emoji:"🍗",hunger:35,mood:20,xp:5}
+];
+
+var TASKS=[
+  {id:"read",name:"阅读30分钟",emoji:"📖",reward:8,desc:"滋养心灵"},
+  {id:"exercise",name:"运动30分钟",emoji:"🏃‍♀️",reward:10,desc:"强健体魄"},
+  {id:"work_done",name:"完成今日核心工作",emoji:"💼",reward:8,desc:"高效产出"},
+  {id:"learn",name:"学习新技能20分钟",emoji:"🧠",reward:8,desc:"持续成长"},
+  {id:"early_sleep",name:"23点前入睡",emoji:"🌙",reward:6,desc:"规律作息"},
+  {id:"meditate",name:"冥想或放松10分钟",emoji:"🧘‍♀️",reward:5,desc:"内心平静"},
+  {id:"journal",name:"写今日复盘",emoji:"📝",reward:7,desc:"自我觉察"}
+];
+
+var MAP_LEVELS=[
+  {id:"village",name:"舒适区",emoji:"🏘️",unlockXP:0,lvReq:0,
+   monsters:[
+     {name:"拖延怪",emoji:"🐛",msg:"这个不急，明天再说...每天都这么说...",hpBase:20,atkBase:3},
+     {name:"躺平妖",emoji:"🛋️",msg:"上了一天班好累，什么都不想干...",hpBase:25,atkBase:4},
+     {name:"刷手机精",emoji:"📱",msg:"就看5分钟...怎么都11点了",hpBase:22,atkBase:3}
+   ]},
+  {id:"forest",name:"职场丛林",emoji:"🌲",unlockXP:60,lvReq:3,
+   monsters:[
+     {name:"不敢拒绝精",emoji:"👻",msg:"安排不合理但不敢说...怕得罪人...",hpBase:35,atkBase:6},
+     {name:"不配感怪",emoji:"🎭",msg:"别人都那么厉害，我算什么...",hpBase:40,atkBase:7},
+     {name:"差不多就行妖",emoji:"😏",msg:"反正也没人看，混一天是一天...",hpBase:30,atkBase:5}
+   ]},
+  {id:"lake",name:"关系觉察湖",emoji:"🌊",unlockXP:180,lvReq:5,
+   monsters:[
+     {name:"都是我的错水母",emoji:"🪼",msg:"孩子成绩不好，是不是我没教育好...",hpBase:50,atkBase:9},
+     {name:"不够关心我鱼",emoji:"🐠",msg:"他从来不主动关心我的感受...",hpBase:55,atkBase:10},
+     {name:"面子包袱龟",emoji:"🐢",msg:"在别人面前不能露怯，得撑着...",hpBase:60,atkBase:8}
+   ]},
+  {id:"mountain",name:"勇气峰",emoji:"⛰️",unlockXP:350,lvReq:8,
+   monsters:[
+     {name:"万一失败巨人",emoji:"👹",msg:"考不过怎么办...被人笑话...",hpBase:80,atkBase:14},
+     {name:"太晚凤凰",emoji:"🔥",msg:"47岁了还能开始吗...算了吧...",hpBase:75,atkBase:13},
+     {name:"不是这块料妖",emoji:"😈",msg:"我不擅长这个...学不会的...",hpBase:70,atkBase:12}
+   ]},
+  {id:"castle",name:"从容城堡",emoji:"🏰",unlockXP:550,lvReq:12,
+   monsters:[
+     {name:"这辈子就这样龙王",emoji:"🐉",msg:"人生还有可能不一样吗...",hpBase:100,atkBase:16},
+     {name:"忙但空虚女巫",emoji:"🧙‍♀️",msg:"每天都在忙，但说不出在忙什么...",hpBase:110,atkBase:18},
+     {name:"如果当初魔王",emoji:"👿",msg:"如果当年没调海南...现在会怎样...",hpBase:95,atkBase:15}
+   ]},
+  {id:"star",name:"自由星空",emoji:"🌟",unlockXP:900,lvReq:16,
+   monsters:[
+     {name:"除了工作我是谁星灵",emoji:"💫",msg:"卸下所有身份后，我是谁...",hpBase:140,atkBase:22},
+     {name:"恐惧变老黑洞",emoji:"🕳️",msg:"越来越老了...还来得及吗...",hpBase:130,atkBase:20},
+     {name:"活着到底为了什么终焉",emoji:"🌑",msg:"日复一日...人生的意义在哪里...",hpBase:150,atkBase:24}
+   ]}
+];
+
+var BADGES=[
+  {id:"first_feed",name:"第一口滋养",icon:"🍼",desc:"第一次照顾自己"},
+  {id:"first_battle",name:"初战觉醒",icon:"⚔️",desc:"赢得第一场内心战斗"},
+  {id:"lv5",name:"破茧者",icon:"🛡️",desc:"伙伴达到5级"},
+  {id:"lv10",name:"蜕变达人",icon:"🎖️",desc:"伙伴达到10级"},
+  {id:"all_tasks",name:"自律女王",icon:"🏆",desc:"一天内完成所有任务"},
+  {id:"streak3",name:"三日坚持",icon:"🔥",desc:"连续3天完成任务"},
+  {id:"streak7",name:"七日传说",icon:"👑",desc:"连续7天完成任务"},
+  {id:"streak30",name:"月度传奇",icon:"💎",desc:"连续30天完成任务"},
+  {id:"explore_all",name:"全境探索",icon:"🗺️",desc:"到达所有地图"},
+  {id:"beat_boss",name:"终极觉醒",icon:"✨",desc:"击败自由星空的怪兽"}
+];
+
+var EGGS=[{id:"mystery",name:"神秘彩蛋",icon:"🥚",desc:"发现一个隐藏彩蛋！"}];
+
+var GOAL_PRESETS=[
+  {id:"read30",name:"每天阅读30分钟",target:30,unit:"分钟"},
+  {id:"exercise20",name:"每天运动20分钟",target:20,unit:"分钟"},
+  {id:"early_sleep",name:"23点前入睡",target:1,unit:"次"},
+  {id:"weight50",name:"目标体重50kg",target:50,unit:"kg"},
+  {id:"study_skill",name:"每周学习新技能",target:1,unit:"次"},
+  {id:"promote",name:"通过主治医师考试",target:1,unit:"次"}
+];
+
+var PET_THRESHOLDS=[0,5,12,22,35,50];
+var PET_STAGES=["萌芽","幼苗","成长","绽放","成熟","传奇"];
+
+var petTalk=[
+  ["今天好累啊...能不能休息一下...","想刷会儿手机...","最近压力大...","陪我发会儿呆吧..."],
+  ["嗯，今天状态不错！","书看完了，好充实~","运动完的感觉真好！","谢谢你照顾我~"],
+  ["越来越好了呢！","一起变得更强大吧！","没有什么能阻挡我们！","我已经准备好了！"]
+];
+
+var sysMessages={avatar:"选好啦！真好看~",pet:"伙伴就位，准备出发！",task_done:"任务完成！太棒了！"};
+var actionMessages={pet:["这个真好~谢谢你","元气满满！","好心情+100！"],play:["嘻嘻，放松一下~","笑一笑十年少~","今天也要开心呀！"]};
+
+var LS_KEY="my_adventure_v1";
+var state,battleState;
+
+function defaultState(){
+  return{avatar:null,pet:null,petName:"",xp:0,hunger:50,mood:50,
+    level:0,inventory:[],tasksDone:[],todayDone:{opts:[],count:0,records:[]},
+    badges:[],eggs:[],goals:[],streak:0,lastDate:"",
+    bestRecords:[],battleWins:0,battleLosses:0,customGoals:[],exploredMaps:[]};
+}
+function loadState(){
+  try{var s=localStorage.getItem(LS_KEY);
+    if(s){state=JSON.parse(s);if(!state.todayDone)state.todayDone={opts:[],count:0,records:[]};
+      if(!state.bestRecords)state.bestRecords=[];if(!state.battleWins)state.battleWins=0;
+      if(!state.battleLosses)state.battleLosses=0;if(!state.customGoals)state.customGoals=[];
+      if(!state.exploredMaps)state.exploredMaps=[];}
+    else state=defaultState();
+    checkNewDay();}catch(e){state=defaultState();}
+}
+function saveState(){try{localStorage.setItem(LS_KEY,JSON.stringify(state))}catch(e){}}
+function checkNewDay(){var today=new Date().toDateString();if(state.lastDate!==today){state.todayDone={opts:[],count:0,records:[]};state.lastDate=today;saveState();}}
+
+function getLevel(xp){for(var i=PET_THRESHOLDS.length-1;i>=0;i--){if(xp>=PET_THRESHOLDS[i])return i;}return 0;}
+function getNextXP(lv){return lv<PET_THRESHOLDS.length-1?PET_THRESHOLDS[lv+1]:PET_THRESHOLDS[PET_THRESHOLDS.length-1]+30;}
+function getPetData(){var p=PETS.find(function(x){return x.id===state.pet})||PETS[0];var a=AVATARS.find(function(x){return x.id===state.avatar})||AVATARS[0];return{pet:p,avatar:a,emoji:p.emoji,name:state.petName||p.name};}
+function getPetPower(){var lv=state.level;return Math.round(5+lv*3+state.mood/10);}
+function rand(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
+function randomPetTalk(){var cat=state.mood>60?1:(state.mood>30?0:2);var talks=petTalk[Math.min(cat,petTalk.length-1)];return talks[rand(0,talks.length-1)];}
+
+function generateMonster(mapLv){
+  var map=MAP_LEVELS[mapLv];var monDef=map.monsters[rand(0,map.monsters.length-1)];
+  var lvScale=1+mapLv*0.15;var petPwr=getPetPower();var weakness=Math.min(0.5,petPwr*0.005);
+  return{name:monDef.name,emoji:monDef.emoji,msg:monDef.msg,hpBase:Math.round(monDef.hpBase*lvScale*(1-weakness)),atkBase:Math.round(monDef.atkBase*lvScale*(1-weakness)),mapLv:mapLv};
+}
+function startBattle(mapLv){
+  var mon=generateMonster(mapLv);
+  battleState={monster:mon,mapLv:mapLv,petHP:50+state.level*10+state.mood/5,petMaxHP:50+state.level*10+state.mood/5,monsterHP:mon.hpBase,monsterMaxHP:mon.hpBase,won:false,lost:false,round:0,log:[]};
+  var h='<div class="map-detail-overlay" id="mapOverlay"><div class="map-detail-panel" style="position:relative"><button class="map-detail-close" onclick="battleState=null;closeMapDetail();renderAll()">✕</button><div id="battleBox"></div></div></div>';
+  document.body.insertAdjacentHTML("beforeend",h);
+  document.getElementById("mapOverlay").addEventListener("click",function(e){if(e.target===this){battleState=null;closeMapDetail();renderAll();}});
+  renderBattle();
+}
+function battleRound(){
+  if(!battleState||battleState.won||battleState.lost)return;
+  var b=battleState;var petAtk=getPetPower()+rand(1,5);var monAtk=b.monster.atkBase+rand(0,3);
+  if(state.mood>70)petAtk=Math.round(petAtk*1.2);if(state.hunger<20)petAtk=Math.round(petAtk*0.7);
+  b.monsterHP-=petAtk;b.log.push(getPetData().name+" 发起攻势！造成 "+petAtk+" 伤害");
+  if(b.monsterHP<=0){b.monsterHP=0;b.won=true;b.log.push(b.monster.name+" 被克服了！");endBattle();return;}
+  b.petHP-=monAtk;b.log.push(b.monster.name+" 反击！造成 "+monAtk+" 伤害");
+  if(b.petHP<=0){b.petHP=0;b.lost=true;b.log.push(getPetData().name+" 暂时退却了...");endBattle();return;}
+  b.round++;renderBattle();
+}
+function endBattle(){
+  if(!battleState)return;var b=battleState;
+  if(b.won){var rewardXP=10+b.mapLv*5;state.xp+=rewardXP;state.battleWins++;
+    if(state.exploredMaps.indexOf(b.mapLv)<0)state.exploredMaps.push(b.mapLv);
+    if(state.badges.indexOf("first_battle")<0)state.badges.push("first_battle");
+    if(b.mapLv===5&&state.badges.indexOf("beat_boss")<0)state.badges.push("beat_boss");
+    if(state.exploredMaps.length>=6&&state.badges.indexOf("explore_all")<0)state.badges.push("explore_all");
+    state.level=getLevel(state.xp);saveState();renderAll();}
+  else{state.battleLosses++;state.mood=Math.max(0,state.mood-10);saveState();}
+  renderBattle();
+}
+
+function feedPet(foodId){
+  var food=FOODS.find(function(f){return f.id===foodId});if(!food)return;
+  var idx=-1;for(var i=0;i<state.inventory.length;i++){if(state.inventory[i]===foodId){idx=i;break;}}
+  if(idx<0)return;state.inventory.splice(idx,1);state.hunger=Math.min(100,state.hunger+food.hunger);
+  state.mood=Math.min(100,state.mood+food.mood);state.xp+=food.xp;state.level=getLevel(state.xp);
+  if(state.badges.indexOf("first_feed")<0)state.badges.push("first_feed");
+  saveState();renderAll();showBubble(actionMessages.pet[rand(0,actionMessages.pet.length-1)]);
+}
+function selectAvatar(avId){state.avatar=avId;saveState();}
+function selectPet(petId){state.pet=petId;state.petName=PETS.find(function(p){return p.id===petId}).name;saveState();}
+function toggleTask(taskId){
+  var td=state.todayDone;if(td.opts.indexOf(taskId)>=0)return;
+  td.opts.push(taskId);td.count++;var task=TASKS.find(function(t){return t.id===taskId});
+  if(task)state.xp+=task.reward;state.level=getLevel(state.xp);
+  if(td.opts.length>=TASKS.length&&state.badges.indexOf("all_tasks")<0)state.badges.push("all_tasks");
+  saveState();renderAll();showBubble(sysMessages.task_done+" (+"+task.reward+" XP)");
+}
+function addBestRecord(){
+  var input=document.getElementById("bestInput");var text=(input.value||"").trim();if(!text)return;
+  state.bestRecords.push({text:text,date:new Date().toLocaleDateString("zh-CN")});
+  state.xp+=3;state.level=getLevel(state.xp);saveState();renderAll();input.value="";
+  showBubble("记录成功！+3 XP");
+}
+function addCustomGoal(){
+  var input=document.getElementById("customGoalInput");var text=(input.value||"").trim();if(!text)return;
+  state.customGoals.push({name:text,done:false,date:new Date().toLocaleDateString("zh-CN")});
+  saveState();renderGoals();input.value="";showBubble("新目标已添加！加油");
+}
+function toggleCustomGoal(idx){
+  if(state.customGoals[idx]){state.customGoals[idx].done=!state.customGoals[idx].done;
+    if(state.customGoals[idx].done){state.xp+=5;state.level=getLevel(state.xp);}saveState();renderGoals();}
+}
+function deleteCustomGoal(idx){state.customGoals.splice(idx,1);saveState();renderGoals();}
+
+var currentTab="map";var bubbleTimer=null;
+function showBubble(text){
+  var el=document.getElementById("petBubble");
+  if(el){el.textContent=text;el.style.animation="none";void el.offsetWidth;el.style.animation="bubbleIn .4s";}
+  clearTimeout(bubbleTimer);bubbleTimer=setTimeout(function(){if(el)el.textContent="";},3000);
+}
+function switchTab(tab){currentTab=tab;renderAll();}
+
+function renderAll(){
+  var app=document.getElementById("app");var h="";
+  h+=renderHeader();h+=renderPetScene();h+=renderStats();h+=renderInventory();h+=renderTabs();h+=renderPanel();
+  app.innerHTML=h;bindEvents();
+}
+function renderHeader(){var pd=getPetData();return '<div class="header"><h1>🌸 我的冒险岛</h1><div class="sub">和'+pd.name+'一起成长吧</div></div>';}
+function renderPetScene(){
+  var pd=getPetData();var stageIdx=0;
+  for(var i=PET_THRESHOLDS.length-1;i>=0;i--){if(state.xp>=PET_THRESHOLDS[i]){stageIdx=i;break;}}
+  var stage=PET_STAGES[stageIdx];var nextXP=getNextXP(state.level);
+  return '<div class="pet-scene"><div class="pet-ground"></div><div class="pet-display">'
+    +'<div class="pet-avatar">'+pd.avatar.emoji+'</div>'
+    +'<div class="pet-name">'+pd.name+'</div>'
+    +'<div class="pet-level">Lv.'+(state.level+1)+' '+stage+' | XP: '+state.xp+'/'+nextXP+'</div>'
+    +'<div class="pet-status">'
+    +'<span class="ps-item">🍽️ 能量 <span class="ps-val">'+state.hunger+'%</span></span>'
+    +'<span class="ps-item">💖 心情 <span class="ps-val">'+state.mood+'%</span></span>'
+    +'<span class="ps-item">⚔️ 战力 <span class="ps-val">'+getPetPower()+'</span></span></div>'
+    +'<div class="pet-bubbles" id="petBubble"></div></div></div>';
+}
+function renderStats(){
+  return '<div class="stats-bar">'
+    +'<div class="stat-card"><div class="stat-val">🏆 '+state.battleWins+'</div><div class="stat-label">内心战胜</div></div>'
+    +'<div class="stat-card"><div class="stat-val">✅ '+state.todayDone.count+'</div><div class="stat-label">今日完成</div></div>'
+    +'<div class="stat-card"><div class="stat-val">📝 '+state.bestRecords.length+'</div><div class="stat-label">美好记录</div></div></div>';
+}
+function renderInventory(){
+  var h='<div class="inventory"><div class="inv-title">🎒 能量背包 ('+state.inventory.length+')</div><div class="inv-grid">';
+  if(state.inventory.length===0){
+    h+='<div class="inv-empty"></div><div class="inv-empty"></div><div class="inv-empty"></div>';
+    h+='<div style="width:100%;text-align:center;color:var(--text3);font-size:12px;padding:8px">背包空空~完成任务获取能量补给吧</div>';
+  }else{
+    state.inventory.forEach(function(fid){var food=FOODS.find(function(f){return f.id===fid});
+      if(food)h+='<div class="inv-item" data-feed="'+fid+'" data-name="'+food.name+'">'+food.emoji+'</div>';});
+  }
+  h+='</div></div>';return h;
+}
+function renderTabs(){
+  var tabs=[{id:"map",label:"🗺️ 地图"},{id:"task",label:"📋 任务"},{id:"goal",label:"🎯 目标"},{id:"badge",label:"🏅 成就"}];
+  var h='<div class="tab-nav">';
+  tabs.forEach(function(t){h+='<button class="tab-btn'+(currentTab===t.id?' active':'')+'" data-tab="'+t.id+'">'+t.label+'</button>';});
+  h+='</div>';return h;
+}
+function renderPanel(){
+  switch(currentTab){case "map":return renderMapPanel();case "task":return renderTaskPanel();case "goal":return renderGoalPanel();case "badge":return renderBadgePanel();default:return "";}
+}
+
+function renderMapPanel(){
+  var h='<div class="tab-panel active">';
+  if(!state.pet){h+='<div style="text-align:center;padding:40px;color:var(--text2)">先选择你的伙伴吧！</div></div>';return h;}
+  h+='<div style="text-align:center;margin-bottom:12px;font-size:14px;color:var(--text2)">点击区域探索，与内心的小怪兽战斗！</div>';
+  h+='<div class="battle-stats"><span>⚔️ 克服: '+state.battleWins+'</span><span>💨 退却: '+state.battleLosses+'</span></div>';
+  h+='<div class="map-grid">';
+  MAP_LEVELS.forEach(function(m,i){
+    var locked=state.xp<m.unlockXP;var current=state.exploredMaps.indexOf(i)>=0;
+    h+='<div class="map-card'+(locked?' locked':'')+(current?' current':'')+'" data-map="'+i+'">'
+      +'<div class="map-emoji">'+m.emoji+'</div><div class="map-name">'+m.name+'</div>'
+      +'<div class="map-lv">Lv.'+(m.lvReq+1)+' | 需'+m.unlockXP+'XP</div></div>';
+  });
+  h+='</div></div>';return h;
+}
+function showMapDetail(mapLv){
+  var map=MAP_LEVELS[mapLv];
+  var h='<div class="map-detail-overlay" id="mapOverlay"><div class="map-detail-panel" style="position:relative">'
+    +'<button class="map-detail-close" onclick="closeMapDetail()">✕</button>'
+    +'<div style="text-align:center"><div style="font-size:48px">'+map.emoji+'</div>'
+    +'<h2 style="font-size:20px;margin-top:8px">'+map.name+'</h2>'
+    +'<div style="font-size:13px;color:var(--text2);margin-top:4px">Lv.'+(map.lvReq+1)+' 区域</div></div>'
+    +'<div style="font-size:14px;color:var(--text2);margin-top:12px;text-align:center">这里的内心小怪兽：</div>'
+    +'<div class="monster-list">';
+  map.monsters.forEach(function(mon){
+    h+='<div class="monster-card"><div class="monster-emoji">'+mon.emoji+'</div><div class="monster-info">'
+      +'<div class="monster-name">'+mon.name+'</div><div class="monster-desc">"'+mon.msg+'"</div>'
+      +'<div class="monster-power">❤️'+mon.hpBase+' ⚔️'+mon.atkBase+'</div></div></div>';
+  });
+  h+='</div><button class="battle-start-btn" onclick="closeMapDetail();startBattle('+mapLv+')">⚔️ 挑战 '+map.name+'！</button></div></div>';
+  document.body.insertAdjacentHTML("beforeend",h);
+  document.getElementById("mapOverlay").addEventListener("click",function(e){if(e.target===this)closeMapDetail();});
+}
+function closeMapDetail(){var o=document.getElementById("mapOverlay");if(o)o.remove();}
+
+function renderBattle(){
+  if(!battleState)return;var b=battleState;var pd=getPetData();
+  var h='<div class="battle-title">'+(b.won?'✅ 战斗胜利！':b.lost?'暂且退却...':'⚔️ '+MAP_LEVELS[b.mapLv].name)
+    +' <span style="font-size:14px;color:var(--text3)">Lv.'+(b.mapLv+1)+'</span></div>';
+  h+='<div class="battle-arena">';
+  h+='<div class="battle-fighter"><div class="battle-emoji">'+pd.avatar.emoji+'</div><div class="battle-name">'+state.petName+'</div>'
+    +'<div class="battle-hp-bar"><div class="battle-hp-fill'+(b.petHP<b.petMaxHP*0.3?' low':'')+'" style="width:'+Math.max(0,Math.round(b.petHP/b.petMaxHP*100))+'%"></div></div>'
+    +'<div class="battle-hp-text">'+Math.max(0,b.petHP)+'/'+b.petMaxHP+'</div></div>';
+  h+='<div class="battle-vs">VS</div>';
+  h+='<div class="battle-fighter"><div class="battle-emoji">'+b.monster.emoji+'</div><div class="battle-name">'+b.monster.name+'</div>'
+    +'<div class="battle-hp-bar"><div class="battle-hp-fill'+(b.monsterHP<b.monsterMaxHP*0.3?' low':'')+'" style="width:'+Math.max(0,Math.round(b.monsterHP/b.monsterMaxHP*100))+'%"></div></div>'
+    +'<div class="battle-hp-text">'+Math.max(0,b.monsterHP)+'/'+b.monsterMaxHP+'</div></div></div>';
+  if(b.won){var rXP=10+b.mapLv*5;
+    h+='<div class="battle-result" style="color:var(--accent)">'+state.petName+' 克服了 '+b.monster.name+'！</div><div class="battle-reward">+'+rXP+' XP</div>'
+      +'<button class="battle-btn" onclick="closeMapDetail();battleState=null;renderAll()">收获成长</button>';
+  }else if(b.lost){
+    h+='<div class="battle-result" style="color:#ff5722">"'+b.monster.msg+'"</div><button class="battle-btn" onclick="closeMapDetail();battleState=null;renderAll()">下次再来！</button>';
+  }else{
+    h+='<div class="battle-status">'+(b.round===0?b.monster.msg:b.log[b.log.length-1])+'</div><button class="battle-btn" id="battleBtn" onclick="battleRound()">出击！</button>';
+  }
+  if(b.log.length>0){h+='<div class="battle-log">';b.log.forEach(function(l){h+='<div>'+l+'</div>';});h+='</div>';}
+  var panel=document.querySelector(".map-detail-panel");
+  if(panel){var c=panel.querySelector(".map-detail-close");panel.innerHTML="";panel.appendChild(c);panel.insertAdjacentHTML("beforeend",h);}
+}
+
+function renderTaskPanel(){
+  var h='<div class="tab-panel active"><div class="task-list">';
+  TASKS.forEach(function(t){
+    var done=state.todayDone.opts.indexOf(t.id)>=0;
+    h+='<div class="task-item'+(done?' done':'')+'" data-task="'+t.id+'">'
+      +'<div class="task-emoji">'+t.emoji+'</div><div class="task-info">'
+      +'<div class="task-name">'+t.name+'</div><div class="task-reward">+'+t.reward+' XP · '+t.desc+'</div></div>'
+      +'<div class="task-check">'+(done?'✅':'')+'</div></div>';
+  });
+  h+='</div><div class="best-section"><div class="best-title">🌟 今天最棒的一件事</div>'
+    +'<div class="best-input-row"><input class="best-input" id="bestInput" type="text" placeholder="写下来吧..." maxlength="100">'
+    +'<button class="best-add-btn" onclick="addBestRecord()">记录</button></div><div class="best-records">';
+  state.bestRecords.forEach(function(r){h+='<div class="best-record"><span class="br-icon">🌟</span><span>'+r.text+'</span></div>';});
+  if(state.bestRecords.length===0)h+='<div style="text-align:center;color:var(--text3);font-size:12px;padding:8px">还没有记录哦~</div>';
+  h+='</div></div></div>';return h;
+}
+
+function renderGoalPanel(){
+  var h='<div class="tab-panel active"><div class="goal-list" id="goalList">';
+  (state.goals||[]).forEach(function(g){
+    var pct=Math.min(100,Math.round(g.progress/g.target*100));
+    h+='<div class="goal-card"><div class="goal-title">'+(g.done?'✅ ':'')+g.name+'</div>'
+      +'<div class="goal-bar"><div class="goal-fill" style="width:'+pct+'%"></div></div>'
+      +'<div class="goal-info"><span>'+g.progress+'/'+g.target+'</span><span>'+pct+'%</span></div></div>';
+  });
+  h+='</div><div class="custom-goal-section"><div class="custom-goal-title">✏️ 我的小目标</div>'
+    +'<div class="custom-goal-input-row"><input class="custom-goal-input" id="customGoalInput" type="text" placeholder="输入自定义目标..." maxlength="50">'
+    +'<button class="custom-goal-add-btn" onclick="addCustomGoal()">添加</button></div><div id="customGoalList">';
+  (state.customGoals||[]).forEach(function(g,i){
+    h+='<div class="custom-goal-item'+(g.done?' custom-goal-done':'')+'" data-cgoal="'+i+'">'
+      +'<span class="custom-goal-text">'+(g.done?'✅ ':'')+(g.name||g.text)+'</span>';
+    if(!g.done)h+='<button class="custom-goal-del" data-cgoal-del="'+i+'">✕</button>';
+    h+='</div>';
+  });
+  h+='</div></div></div>';return h;
+}
+function renderGoals(){
+  var list=document.getElementById("goalList");if(!list)return;var h="";
+  (state.goals||[]).forEach(function(g){
+    var pct=Math.min(100,Math.round(g.progress/g.target*100));
+    h+='<div class="goal-card"><div class="goal-title">'+(g.done?'✅ ':'')+g.name+'</div>'
+      +'<div class="goal-bar"><div class="goal-fill" style="width:'+pct+'%"></div></div>'
+      +'<div class="goal-info"><span>'+g.progress+'/'+g.target+'</span><span>'+pct+'%</span></div></div>';
+  });
+  list.innerHTML=h;
+  var cgList=document.getElementById("customGoalList");if(!cgList)return;var ch="";
+  (state.customGoals||[]).forEach(function(g,i){
+    ch+='<div class="custom-goal-item'+(g.done?' custom-goal-done':'')+'" data-cgoal="'+i+'">'
+      +'<span class="custom-goal-text">'+(g.done?'✅ ':'')+(g.name||g.text)+'</span>';
+    if(!g.done)ch+='<button class="custom-goal-del" data-cgoal-del="'+i+'">✕</button>';
+    ch+='</div>';
+  });cgList.innerHTML=ch;
+}
+
+function renderBadgePanel(){
+  var h='<div class="tab-panel active"><div class="badge-grid" id="badgeGrid">';
+  BADGES.forEach(function(b){var unlocked=(state.badges||[]).indexOf(b.id)>=0;
+    h+='<div class="badge '+(unlocked?"":"locked")+'"><span>'+b.icon+'</span><span class="badge-name">'+b.name+'</span></div>';});
+  h+='</div><div class="egg-box">';
+  EGGS.forEach(function(e){var found=(state.eggs||[]).indexOf(e.id)>=0;
+    if(!found)h+='<div class="badge locked"><span>🤔</span><span class="badge-name">？？</span></div>';
+    else h+='<div class="badge"><span>🤔</span><span class="badge-name">'+e.name+'</span></div>';});
+  h+='</div></div>';return h;
+}
+
+function showInit(){
+  var app=document.getElementById("app");
+  var h='<div class="header"><h1>🌸 我的冒险岛</h1><div class="sub">开启你的自我成长之旅</div></div>';
+  h+='<div style="background:var(--card);border-radius:var(--radius);padding:16px;margin:12px 0;box-shadow:var(--shadow);border:1px solid rgba(233,30,99,.06)">'
+    +'<div style="font-size:14px;color:var(--text2);margin-bottom:12px;text-align:center">选择你的冒险形象</div>'
+    +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px" id="avatarGrid">';
+  AVATARS.forEach(function(a){
+    h+='<div style="text-align:center;cursor:pointer" data-avatar="'+a.id+'">'
+      +'<div class="avatar-opt" data-avatar-id="'+a.id+'" style="width:56px;height:56px;border-radius:50%;border:3px solid transparent;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto">'+a.emoji+'</div>'
+      +'<div style="font-size:10px;color:var(--text2);margin-top:4px">'+a.name+'</div></div>';
+  });
+  h+='</div></div>';
+  h+='<div style="background:var(--card);border-radius:var(--radius);padding:16px;margin:12px 0;box-shadow:var(--shadow);border:1px solid rgba(233,30,99,.06)">'
+    +'<div style="font-size:14px;color:var(--text2);margin-bottom:12px;text-align:center">选择你的成长伙伴</div>'
+    +'<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px" id="petGrid">';
+  PETS.forEach(function(p){
+    h+='<div style="background:var(--card2);border-radius:14px;padding:16px;text-align:center;cursor:pointer;border:2px solid rgba(233,30,99,.06)" data-pet="'+p.id+'" class="pet-opt">'
+      +'<div style="font-size:36px">'+p.emoji+'</div><div style="font-size:14px;font-weight:bold;margin-top:4px">'+p.name+'</div>'
+      +'<div style="font-size:11px;color:var(--text2)">'+p.desc+'</div></div>';
+  });
+  h+='</div></div>';
+  h+='<button id="startBtn" style="display:block;width:100%;padding:16px;border:none;border-radius:var(--radius);'
+    +'background:linear-gradient(135deg,#e91e63,#f06292);color:#fff;font-size:18px;'
+    +'font-weight:bold;cursor:pointer;margin-top:12px;opacity:.5;pointer-events:none">开始冒险 🚀</button>';
+  app.innerHTML=h;
+  var selectedAvatar=null,selectedPet=null;
+  document.querySelectorAll("[data-avatar]").forEach(function(el){
+    el.addEventListener("click",function(){selectedAvatar=this.dataset.avatar;
+      document.querySelectorAll(".avatar-opt").forEach(function(img){img.style.borderColor="transparent"});
+      this.querySelector(".avatar-opt").style.borderColor="var(--accent)";checkStartReady();});
+  });
+  document.querySelectorAll("[data-pet]").forEach(function(el){
+    el.addEventListener("click",function(){selectedPet=this.dataset.pet;
+      document.querySelectorAll(".pet-opt").forEach(function(p){p.style.borderColor="rgba(233,30,99,.06)"});
+      this.style.borderColor="var(--accent)";checkStartReady();});
+  });
+  function checkStartReady(){
+    var btn=document.getElementById("startBtn");
+    if(selectedAvatar&&selectedPet){
+      btn.style.opacity="1";btn.style.pointerEvents="auto";
+      btn.onclick=function(){
+        selectAvatar(selectedAvatar);selectPet(selectedPet);
+        state.inventory=["coffee","book","flower","tea"];
+        state.goals=GOAL_PRESETS.map(function(g){return{name:g.name,target:g.target,progress:0,done:false}});
+        saveState();renderAll();
+      };
+    }
+  }
+}
+
+function bindEvents(){
+  document.querySelectorAll("[data-tab]").forEach(function(btn){btn.addEventListener("click",function(){switchTab(this.dataset.tab);});});
+  document.querySelectorAll("[data-map]").forEach(function(card){
+    card.addEventListener("click",function(){var mapLv=parseInt(this.dataset.map);if(state.xp>=MAP_LEVELS[mapLv].unlockXP)showMapDetail(mapLv);});});
+  document.querySelectorAll("[data-task]").forEach(function(item){item.addEventListener("click",function(){toggleTask(this.dataset.task);});});
+  document.getElementById("app").addEventListener("click",function(e){
+    var feedEl=e.target.closest("[data-feed]");if(feedEl)feedPet(feedEl.dataset.feed);
+    var cgoal=e.target.closest("[data-cgoal]");if(cgoal&&!e.target.closest("[data-cgoal-del]"))toggleCustomGoal(parseInt(cgoal.dataset.cgoal));
+    var cgoalDel=e.target.closest("[data-cgoal-del]");if(cgoalDel)deleteCustomGoal(parseInt(cgoalDel.dataset.cgoalDel));
+  });
+}
+
+loadState();
+if(state.avatar&&state.pet){renderAll();setTimeout(function(){showBubble(randomPetTalk())},800);}
+else{showInit();}
+</script>
+</body>
+</html>
